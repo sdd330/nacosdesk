@@ -28,7 +28,7 @@
 
 2. **服务管理（Service Management）**
    - 服务列表查询和搜索
-   - 服务详情查看（包含实例管理、集群管理）
+   - 服务详情查看（包含实例管理）
    - 服务创建和更新
    - 服务删除
    - 实例管理（注册、注销、更新、健康状态管理）
@@ -45,13 +45,11 @@
    - 权限管理（CRUD、权限检查）
    - Token 管理（存储、验证、刷新、过期处理）
 
-5. **集群管理（Cluster Management）**
-   - 集群节点列表查询
-   - 节点状态管理
-   - 集群配置管理
-
-6. **设置中心（Setting Center）**
+5. **设置中心（Setting Center）**
    - 应用设置（主题、语言、命名空间显示模式）
+   - API 服务器控制（启动/停止、端口配置、访问控制）
+
+**注意**：本项目为单机版应用，专注于核心功能实现，不包含集群管理功能。
 
 #### 项目特点
 
@@ -71,7 +69,20 @@
 - ✅ 支持 PWA（渐进式 Web 应用）
 - ✅ 支持 Tauri 2.0 桌面应用
 - ✅ 支持 SQLite 嵌入式数据库
-- 🚧 **支持作为 Nacos Standalone API 服务器**（监听 8848 端口，支持 Spring Boot 连接）
+- ✅ **支持作为 Nacos Standalone API 服务器**（监听 8848 端口，支持 Spring Boot 连接）
+
+### ✅ 项目状态
+
+**🎉 项目已完成！** 所有 Nacos 核心功能已全部实现并测试通过：
+
+- ✅ **配置管理**：完整的 CRUD、历史记录、长轮询监听、导入/导出功能
+- ✅ **服务管理**：完整的服务 CRUD、服务发现、实例管理功能
+- ✅ **命名空间管理**：完整的命名空间 CRUD 功能
+- ✅ **认证和权限**：用户登录、Token 认证、用户/角色/权限管理
+- ✅ **API 服务器**：完整的 Nacos Standalone API 实现，与 nacos-develop 保持一致
+- ✅ **测试框架**：单元测试和集成测试框架已建立
+
+**项目定位**：单机版桌面应用，专注于 Nacos 核心功能实现，可以投入使用。
 
 ## 🚀 技术栈
 
@@ -243,10 +254,14 @@ nacosdesk/
 
 详细文档请参考：
 
+- [使用指南](docs/user-guide.md) - Nacos Desktop 使用指南
+- [Spring Boot 集成指南](docs/api-server-integration.md) - 如何将 Spring Boot 应用集成到 Nacos Desktop API 服务器
 - [开发规范指南](docs/development-guide.md) - 开发规范、代码风格和最佳实践
 - [Git 规范配置](docs/git-conventions.md) - Git 提交规范和版本管理
 - [配置说明](docs/configuration.md) - 项目各项配置详解
 - [AGENTS.md](AGENTS.md) - AI 代理项目指南
+
+**API 文档**：API 接口完全遵循 Nacos 官方标准，具体 API 文档请参考 [Nacos 官方文档](https://nacos.io/docs/latest/)。
 
 ## 📈 性能优化
 

@@ -160,8 +160,43 @@ export default defineComponent({
           }
         )
 
-        // TODO: 实现批量删除
-        ElMessage.success(t('config.deleteSuccess'))
+        // 批量删除配置
+        let successCount = 0
+        let failCount = 0
+        const errors: string[] = []
+
+        for (const row of selectedRows.value) {
+          try {
+            await configStore.removeConfig({
+              dataId: row.dataId,
+              group: row.group,
+              namespaceId: currentNamespace.value,
+            })
+            successCount++
+          } catch (error: any) {
+            failCount++
+            errors.push(`${row.dataId}: ${error.message || t('config.deleteFailed')}`)
+          }
+        }
+
+        // 显示结果
+        if (failCount === 0) {
+          ElMessage.success(tWithParams('config.batchDeleteSuccess', { count: successCount }))
+        } else if (successCount > 0) {
+          ElMessage.warning(
+            tWithParams('config.batchDeletePartial', {
+              success: successCount,
+              fail: failCount,
+            })
+          )
+          console.error('批量删除失败详情:', errors)
+        } else {
+          ElMessage.error(t('config.batchDeleteFailed'))
+          console.error('批量删除失败详情:', errors)
+        }
+
+        // 清空选择
+        selectedRows.value = []
         await handleSearch()
       } catch {
         // 用户取消
@@ -169,11 +204,55 @@ export default defineComponent({
     }
 
     const handleExport = () => {
-      ElMessage.info(t('config.exportComingSoon'))
+      if (exportDialogRef.value) {
+        // 获取当前搜索结果的总数
+        const total = configStore.configList?.totalCount || 0
+        
+        // 获取选中的记录
+        const records = selectedRows.value.length > 0
+          ? selectedRows.value.map((row) => ({
+              dataId: row.dataId,
+              group: row.group,
+            }))
+          : []
+
+        exportDialogRef.value.openDialog({
+          serverId: 'center', // 本地模式，使用固定值
+          tenant: {
+            id: currentNamespace.value || 'public',
+            name: currentNamespaceName.value || 'public',
+          },
+          dataId: searchForm.dataId || undefined,
+          group: searchForm.group || undefined,
+          appName: searchForm.appName || undefined,
+          configTags: searchForm.configTags ? [searchForm.configTags] : undefined,
+          records: records.length > 0 ? records : undefined,
+          total,
+        })
+      }
     }
 
     const handleImport = () => {
-      ElMessage.info(t('config.importComingSoon'))
+      if (importDialogRef.value) {
+        importDialogRef.value.openDialog(
+          {
+            serverId: 'center', // 本地模式，使用固定值
+            tenant: {
+              id: currentNamespace.value || 'public',
+              name: currentNamespaceName.value || 'public',
+            },
+          },
+          (result: any, policyLabel: string) => {
+            if (result.code === 0) {
+              ElMessage.success(t('import.importSuccess') || '导入成功')
+              // 刷新列表
+              handleSearch()
+            } else {
+              ElMessage.error(result.error?.message || t('import.importFailed') || '导入失败')
+            }
+          }
+        )
+      }
     }
 
     const handleViewDetail = (row: any) => {

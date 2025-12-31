@@ -6,8 +6,9 @@
  */
 
 import { defineComponent, ref, reactive, computed, expose } from 'vue'
-import { ElDialog, ElButton, ElForm, ElFormItem } from 'element-plus'
+import { ElDialog, ElButton, ElForm, ElFormItem, ElMessage } from 'element-plus'
 import { useI18n } from '@/composables/useI18n'
+import { getExportConfigUrl } from '@/api/configuration'
 
 export interface ExportDialogPayload {
   serverId?: string
@@ -92,30 +93,38 @@ export default defineComponent({
       visible.value = false
     }
 
-    const getExportUrl = (): string => {
-      const data: Array<{ dataId: string; group: string }> = []
-      if (exportData.records && exportData.records.length > 0) {
-        exportData.records.forEach((record) => {
-          data.push({ dataId: record.dataId, group: record.group })
-        })
-      }
-
-      const query = `?dataId=${exportData.dataId || ''}&group=${exportData.group || ''}&appName=${
-        exportData.appName || ''
-      }&tags=${(exportData.configTags || []).join(',')}&data=${encodeURIComponent(JSON.stringify(data))}`
-
-      // TODO: 根据实际 API 路径调整
-      const baseLink = `/v3/console/cs/config/export/serverId/${exportData.serverId || 'center'}/tenant/${
-        exportData.tenant?.id || 'public'
-      }${query}`
-
-      return baseLink
-    }
-
     const handleExport = () => {
-      const url = getExportUrl()
-      window.open(url, '_blank')
-      closeDialog()
+      try {
+        // 构建导出参数
+        const ids = exportData.records && exportData.records.length > 0
+          ? exportData.records.map((r) => r.dataId).join(',')
+          : undefined
+
+        const exportUrl = getExportConfigUrl({
+          dataId: exportData.dataId || undefined,
+          group: exportData.group || undefined,
+          appName: exportData.appName || undefined,
+          tags: exportData.configTags && exportData.configTags.length > 0
+            ? exportData.configTags.join(',')
+            : undefined,
+          ids,
+          namespaceId: exportData.tenant?.id || undefined,
+          exportV2: true, // 使用 V2 格式
+        })
+
+        // 打开下载链接
+        const link = document.createElement('a')
+        link.href = exportUrl
+        link.download = `nacos_config_export_${new Date().getTime()}.zip`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+
+        ElMessage.success(t('export.exportSuccess') || '导出成功')
+        closeDialog()
+      } catch (error: any) {
+        ElMessage.error(error.message || t('export.exportFailed') || '导出失败')
+      }
     }
 
     // ✅ Composition API: 使用 expose 暴露方法

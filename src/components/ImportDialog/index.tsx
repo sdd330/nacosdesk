@@ -16,9 +16,11 @@ import {
   ElUpload,
   ElIcon,
   ElTooltip,
+  ElMessage,
 } from 'element-plus'
 import { Warning, QuestionFilled } from '@element-plus/icons-vue'
 import { useI18n } from '@/composables/useI18n'
+import { importConfig } from '@/api/configuration'
 import type { UploadProps, UploadRequestOptions } from 'element-plus'
 
 export interface ImportDialogPayload {
@@ -79,14 +81,6 @@ export default defineComponent({
       }
     }
 
-    const getUploadUrl = (): string => {
-      // API 路径：/v3/console/cs/config/import/serverId/{serverId}/tenant/{tenantId}?policy={policy}
-      const baseLink = `/v3/console/cs/config/import/serverId/${importData.serverId || 'center'}/tenant/${
-        importData.tenant?.id || 'public'
-      }?policy=${policy.value}`
-      return baseLink
-    }
-
     const handleUploadSuccess = (response: any) => {
       if (callback) {
         if (response.code === 0) {
@@ -107,27 +101,20 @@ export default defineComponent({
     }
 
     const customRequest = async (options: UploadRequestOptions) => {
-      const formData = new FormData()
-      formData.append('file', options.file)
-
       try {
-        const response = await fetch(getUploadUrl(), {
-          method: 'POST',
-          body: formData,
-          headers: {
-            poweredBy: 'simpleMVC',
-            projectName: 'nacos',
-          },
+        const result = await importConfig({
+          file: options.file,
+          namespaceId: importData.tenant?.id || undefined,
+          policy: policy.value as 'abort' | 'skip' | 'overwrite',
         })
 
-        const result = await response.json()
-        if (response.ok && result.code === 0) {
+        if (result.code === 0) {
           handleUploadSuccess(result)
         } else {
-          handleUploadError({ response: result, message: result.message || '上传失败' })
+          handleUploadError({ message: result.message || '导入失败' })
         }
       } catch (err: any) {
-        handleUploadError({ message: err.message || '上传失败' })
+        handleUploadError({ message: err.message || '导入失败' })
       }
     }
 
@@ -149,7 +136,6 @@ export default defineComponent({
           footer: () => (
             <div class="flex justify-center">
               <ElUpload
-                action={getUploadUrl()}
                 accept=".zip"
                 limit={1}
                 customRequest={customRequest}

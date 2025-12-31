@@ -208,3 +208,89 @@ export function getListenersByIp(params: {
   })
 }
 
+/**
+ * 回滚配置到指定历史版本
+ */
+export function rollbackConfig(params: {
+  dataId: string
+  groupName: string
+  nid: string
+  namespaceId?: string
+}): Promise<{ code: number; message?: string }> {
+  return httpClient.post<{ code: number; message?: string }>('/v3/console/cs/config/rollback', undefined, {
+    params: params as Record<string, string>,
+  })
+}
+
+/**
+ * 导出配置（返回下载 URL）
+ */
+export function getExportConfigUrl(params: {
+  dataId?: string
+  group?: string
+  appName?: string
+  tags?: string
+  ids?: string
+  namespaceId?: string
+  exportV2?: boolean
+}): string {
+  const queryParams = new URLSearchParams()
+  if (params.dataId) queryParams.append('dataId', params.dataId)
+  if (params.group) queryParams.append('group', params.group)
+  if (params.appName) queryParams.append('appName', params.appName)
+  if (params.tags) queryParams.append('config_tags', params.tags)
+  if (params.ids) queryParams.append('ids', params.ids)
+  if (params.namespaceId && params.namespaceId !== 'public') {
+    queryParams.append('tenant', params.namespaceId)
+  }
+  if (params.exportV2) {
+    queryParams.append('exportV2', 'true')
+  } else {
+    queryParams.append('export', 'true')
+  }
+
+  return `/nacos/v1/cs/configs?${queryParams.toString()}`
+}
+
+/**
+ * 导入配置
+ */
+export function importConfig(params: {
+  file: File
+  namespaceId?: string
+  policy?: 'abort' | 'skip' | 'overwrite'
+}): Promise<{ code: number; message?: string; data?: any }> {
+  const formData = new FormData()
+  formData.append('file', params.file)
+
+  const queryParams = new URLSearchParams()
+  queryParams.append('import', 'true')
+  if (params.namespaceId && params.namespaceId !== 'public') {
+    queryParams.append('tenant', params.namespaceId)
+  }
+  if (params.policy) {
+    queryParams.append('policy', params.policy)
+  }
+
+  // 使用 fetch 而不是 httpClient，因为需要上传文件
+  return fetch(`/nacos/v1/cs/configs?${queryParams.toString()}`, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      poweredBy: 'simpleMVC',
+      projectName: 'nacos',
+    },
+  })
+    .then(async (response) => {
+      const result = await response.json()
+      if (response.ok) {
+        return result
+      } else {
+        throw new Error(result.message || '导入失败')
+      }
+    })
+    .catch((error) => {
+      throw error
+    })
+}
+

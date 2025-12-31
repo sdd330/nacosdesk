@@ -1,0 +1,126 @@
+# Spring Boot 应用配置示例
+# 用于连接 Nacos Desktop API 服务器
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: example-service
+  
+  cloud:
+    nacos:
+      # ============================================
+      # 配置管理配置
+      # ============================================
+      config:
+        # Nacos Desktop API 服务器地址
+        server-addr: localhost:8848
+        
+        # 命名空间（默认为 public）
+        # 可以在 Nacos Desktop 中创建自定义命名空间，然后在这里指定命名空间 ID
+        namespace: public
+        
+        # 配置组（默认为 DEFAULT_GROUP）
+        group: DEFAULT_GROUP
+        
+        # 配置文件扩展名（yaml、properties、json、xml 等）
+        # 对应 Nacos Desktop 中配置的 Data ID 后缀
+        file-extension: yaml
+        
+        # 认证信息（如果 Nacos Desktop 启用了认证）
+        username: nacos
+        password: nacos
+        
+        # 是否启用配置刷新（默认 true）
+        refresh-enabled: true
+        
+        # 配置获取超时时间（毫秒，默认 3000）
+        timeout: 3000
+        
+        # 长轮询超时时间（毫秒，默认 30000）
+        long-poll-timeout: 30000
+        
+        # 共享配置（可选）
+        # 多个服务可以共享的配置
+        shared-configs:
+          - data-id: shared-config.yaml
+            group: DEFAULT_GROUP
+            refresh: true  # 是否支持动态刷新
+        
+        # 扩展配置（可选）
+        # 额外的配置，优先级低于主配置
+        extension-configs:
+          - data-id: extension-config.yaml
+            group: DEFAULT_GROUP
+            refresh: true
+      
+      # ============================================
+      # 服务注册与发现配置
+      # ============================================
+      discovery:
+        # Nacos Desktop API 服务器地址
+        server-addr: localhost:8848
+        
+        # 命名空间（默认为 public）
+        namespace: public
+        
+        # 服务组（默认为 DEFAULT_GROUP）
+        group: DEFAULT_GROUP
+        
+        # 认证信息（如果 Nacos Desktop 启用了认证）
+        username: nacos
+        password: nacos
+        
+        # ============================================
+        # 实例配置
+        # ============================================
+        # 实例 IP（默认自动获取）
+        ip: ${spring.cloud.client.ip-address}
+        
+        # 实例端口（默认使用 server.port）
+        port: ${server.port}
+        
+        # 权重（0-1，默认 1.0）
+        weight: 1.0
+        
+        # 是否启用（默认 true）
+        enabled: true
+        
+        # 健康状态（默认 true）
+        healthy: true
+        
+        # 是否临时实例（默认 true）
+        # true: 临时实例，服务下线后自动删除
+        # false: 持久实例，服务下线后保留
+        ephemeral: true
+        
+        # 集群名称（默认 DEFAULT）
+        cluster-name: DEFAULT
+        
+        # 心跳间隔（毫秒，默认 5000）
+        heart-beat-interval: 5000
+        
+        # 心跳超时时间（毫秒，默认 15000）
+        heart-beat-timeout: 15000
+        
+        # IP 删除超时时间（毫秒，默认 30000）
+        ip-delete-timeout: 30000
+        
+        # ============================================
+        # 元数据（可选）
+        # ============================================
+        metadata:
+          version: 1.0.0
+          region: us-east-1
+          zone: zone-a
+          # 可以添加任意自定义元数据
+
+# ============================================
+# 应用自定义配置
+# ============================================
+your:
+  config:
+    key: value
+    number: 100
+

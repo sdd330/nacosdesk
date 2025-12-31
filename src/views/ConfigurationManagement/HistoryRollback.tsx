@@ -189,6 +189,9 @@ export default defineComponent({
         })
 
         if (diffEditorDialogRef.value) {
+          // 检测配置类型（从历史配置或最新配置中获取）
+          const configType = historyConfig.type || latestConfig.type || 'text'
+          
           ;(diffEditorDialogRef.value as any).openDialog(
             historyConfig.content || '',
             latestConfig.content || '',
@@ -196,6 +199,7 @@ export default defineComponent({
               title: t('historyRollback.compareTitle') || '版本对比',
               currentArea: t('historyRollback.selectedVersion') || '选中版本',
               originalArea: t('historyRollback.latestVersion') || '最新版本',
+              language: configType,
             }
           )
         }

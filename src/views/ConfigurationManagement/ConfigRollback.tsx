@@ -18,8 +18,7 @@ import {
 } from 'element-plus'
 import { useI18n } from '@/composables/useI18n'
 import MonacoEditor from '@/components/MonacoEditor/index'
-import { getHistoryDetail } from '@/api/configuration'
-import { updateConfig, deleteConfig } from '@/api/configuration'
+import { getHistoryDetail, rollbackConfig } from '@/api/configuration'
 import { urlParams } from '@/utils/urlParams'
 
 export default defineComponent({
@@ -136,45 +135,19 @@ export default defineComponent({
 
         loading.value = true
 
-        if (formData.opType === 'I') {
-          // 如果是插入操作，回滚就是删除配置
-          await deleteConfig({
-            dataId: formData.dataId,
-            group: formData.group,
-            namespaceId: namespace.value,
-          })
+        // 使用专门的回滚 API
+        const result = await rollbackConfig({
+          dataId: formData.dataId,
+          groupName: formData.group,
+          nid: nid.value,
+          namespaceId: namespace.value !== 'public' ? namespace.value : undefined,
+        })
+
+        if (result.code === 0) {
+          ElMessage.success(result.message || t('configRollback.rollbackSuccessful') || '回滚成功')
         } else {
-          // 更新或删除操作，回滚就是恢复配置
-          const content = monacoEditorRef.value
-            ? (monacoEditorRef.value as any).getValue()
-            : formData.content
-
-          const updateParams: any = {
-            dataId: formData.dataId,
-            group: formData.group,
-            content: content,
-            md5: formData.md5,
-            namespaceId: namespace.value,
-          }
-
-          // 添加扩展信息
-          if (extInfo.value.type) {
-            updateParams.type = extInfo.value.type
-          }
-          if (extInfo.value.config_tags) {
-            updateParams.configTags = extInfo.value.config_tags
-          }
-          if (extInfo.value.c_desc) {
-            updateParams.desc = extInfo.value.c_desc
-          }
-          if (formData.appName) {
-            updateParams.appName = formData.appName
-          }
-
-          await updateConfig(updateParams)
+          throw new Error(result.message || t('configRollback.rollbackFailed') || '回滚失败')
         }
-
-        ElMessage.success(t('configRollback.rollbackSuccessful') || '回滚成功')
         
         // 跳转回历史版本列表
         router.push({

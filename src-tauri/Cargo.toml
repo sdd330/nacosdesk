@@ -1,0 +1,47 @@
+[package]
+name = "nacosdesk"
+version = "1.0.0"
+description = "An easy-to-use dynamic service discovery, configuration and service management platform for building cloud native applications"
+authors = ["nacosdesk team"]
+license = "Apache-2.0"
+edition = "2021"
+rust-version = "1.70"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tauri = { version = "2", features = [] }
+tauri-plugin-store = "2"
+tauri-plugin-updater = "2"
+tauri-plugin-sql = { version = "2", features = ["sqlite"] }
+bcrypt = "0.15"
+uuid = { version = "1", features = ["v4", "serde"] }
+md5 = "0.7"
+axum = { version = "0.7", features = ["multipart"] }
+axum-extra = { version = "0.9", features = ["form"] }
+tokio = { version = "1", features = ["full"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors", "trace"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+urlencoding = "2.1"
+zip = "0.6"
+yaml-rust = "0.5"
+chrono = { version = "0.4", features = ["serde"] }
+
+[dev-dependencies]
+tower = { version = "0.4", features = ["util"] }
+tower-http = { version = "0.5", features = ["trace"] }
+http-body-util = "0.1"
+tokio-test = "0.4"
+sqlx = { version = "0.7", features = ["runtime-tokio-native-tls", "sqlite", "chrono", "uuid"] }
+tempfile = "3.10"
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
+sqlite = ["tauri-plugin-sql/sqlite"]
+
