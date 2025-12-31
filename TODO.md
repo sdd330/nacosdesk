@@ -1,8 +1,8 @@
-# TODO.md - Nacos Desktop Console 开发任务列表
+# TODO.md - Nacos Desktop 开发任务列表
 
 ## 📋 项目概述
 
-**Nacos Desktop Console** 是基于 Vue 3.5 + TypeScript + JSX + Composition API + Tauri 2.0 + SQLite 重新实现的 **Nacos Web Console 桌面版本**。
+**Nacos Desktop** 是基于 Vue 3.5 + TypeScript + JSX + Composition API + Tauri 2.0 + SQLite 重新实现的 **Nacos Web Console 桌面版本**。
 
 ### 🎯 项目定位
 

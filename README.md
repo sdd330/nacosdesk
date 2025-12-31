@@ -1,4 +1,4 @@
-# Nacos Desktop Console
+# Nacos Desktop
 
 基于 Vue 3.5 + TypeScript + Element Plus + UnoCSS + Pinia + **JSX + Composition API** + **Tauri 2.0** + **SQLite** 重新实现的 **Nacos Web Console 桌面版本**。
 
@@ -6,7 +6,7 @@
 
 ### 项目概述
 
-**Nacos Desktop Console** 是一个现代化的桌面应用，用于管理和监控 Nacos 配置中心和服务注册中心。本项目是对原 Nacos Web Console 的完全重新实现，采用最新的前端技术栈和 Tauri 2.0 桌面框架，提供更好的开发体验和用户体验。
+**Nacos Desktop** 是一个现代化的桌面应用，用于管理和监控 Nacos 配置中心和服务注册中心。本项目是对原 Nacos Web Console 的完全重新实现，采用最新的前端技术栈和 Tauri 2.0 桌面框架，提供更好的开发体验和用户体验。
 
 ### 关于 Nacos Web Console
 
@@ -76,7 +76,7 @@
 
 - **Vue 3.5.13** - 渐进式 JavaScript 框架
 - **TypeScript 5.9.3** - 类型安全的 JavaScript 超集
-- **JSX/TSX** - Vue 3 JSX 语法，增强模板灵活性，特别适用于动态逻辑和复杂组件
+- **JSX/TSX** - Vue 3 JSX 语法，增强模板灵活性
 - **Composition API** - Vue 3 组合式 API，与 JSX 无缝集成
 
 ### UI 和样式
@@ -91,13 +91,6 @@
 - **Vue Router 4.6.4** - Vue.js 官方路由管理器
 - **Vue I18n 9.14.5** - 官方国际化解决方案
 
-### 构建工具和开发工具
-
-- **Vite 7.2.7** - 下一代前端构建工具
-- **@vitejs/plugin-vue-jsx** - Vue 3 JSX 插件
-- **TypeScript** - 类型检查和编译
-- **ESLint** - 代码质量检查
-
 ### 桌面应用支持
 
 - **Tauri 2.0** - 跨平台桌面应用框架
@@ -108,71 +101,19 @@
 ### 其他工具
 
 - **Monaco Editor 0.55.1** - 代码编辑器（VS Code 编辑器核心）
-- **Husky** - Git hooks 管理
-- **Commitlint** - Commit 消息规范检查
-- **Commitizen** - 交互式 Commit 工具
-- **Standard Version** - 版本管理和 CHANGELOG 生成
+- **Vite 7.2.7** - 下一代前端构建工具
+- **Vitest** - 单元测试框架
 
 ## ✨ 核心特性
 
-### JSX + Composition API 无缝集成
-
-- ✅ **完整的 Composition API 支持** - 所有 JSX 组件使用 `defineComponent` + `setup`
-- ✅ **响应式系统** - 使用 `ref`, `reactive`, `computed` 等响应式 API
-- ✅ **生命周期钩子** - `onMounted`, `onUnmounted`, `watch` 等
-- ✅ **Composables** - 使用 `useI18n` 等 composables 封装逻辑
-- ✅ **类型安全** - 完整的 TypeScript 支持
-- ✅ **性能优化** - 使用 `computed` 优化派生状态
-
-### Element Plus
-
-- ✅ 丰富的组件库，开箱即用
-- ✅ 完整的 TypeScript 支持
-- ✅ 自动导入组件，无需手动引入
-- ✅ 图标自动导入
-
-### UnoCSS
-
-- ✅ **最新预设** - presetUno, presetAttributify, presetIcons, presetTypography
-- ✅ **转换器** - transformerDirectives, transformerVariantGroup, transformerCompileClass
-- ✅ **主题系统** - 完整的颜色、断点、动画配置
-- ✅ **快捷方式** - 布局和组件样式快捷方式，代码量减少 75%
-
-### Pinia
-
-- ✅ **Setup Store** - 更好的 TypeScript 支持和代码补全
-- ✅ **storeToRefs** - 自动保持响应式
-- ✅ **错误处理** - 统一的错误管理
-- ✅ **计算属性** - 派生状态优化
-
-### 国际化 (i18n)
-
-- ✅ **Vue I18n 官方库** - 使用 `vue-i18n@9`，Composition API 模式
-- ✅ **类型安全** - 翻译键自动补全，编译时类型检查
-- ✅ **统一 Composable** - `useI18n` 提供增强功能，如 `tWithParams`
-- ✅ **Element Plus 同步** - 语言切换时自动同步 Element Plus 组件库语言
-
-### PWA 支持
-
-- ✅ **渐进式 Web 应用** - 支持离线访问和安装
-- ✅ **Service Worker** - 自动更新和缓存策略
-- ✅ **Manifest** - 应用清单配置
-- ✅ **快捷方式** - 配置管理和服务管理快捷方式
-
-### Tauri 2.0 桌面应用
-
-- ✅ **跨平台支持** - macOS、Linux、Windows
-- ✅ **SQLite 数据库** - 嵌入式数据库支持
-- ✅ **本地 API** - Rust 后端提供本地 API
-- ✅ **自动更新** - 支持应用自动更新
-- ✅ **本地存储** - 使用 Tauri Store 插件
-
-### Git 规范
-
-- ✅ **Husky** - Git hooks 管理
-- ✅ **Commitlint** - Commit 消息规范检查（Conventional Commits）
-- ✅ **Commitizen** - 交互式 Commit 工具
-- ✅ **Standard Version** - 版本管理和 CHANGELOG 生成
+- ✅ **JSX + Composition API** - 完整的 Composition API 支持，所有组件使用 `defineComponent` + `setup`
+- ✅ **TypeScript** - 完整的类型安全支持
+- ✅ **国际化** - 支持中文和英文，使用 Vue I18n
+- ✅ **PWA 支持** - 渐进式 Web 应用，支持离线访问和安装
+- ✅ **Tauri 2.0** - 跨平台桌面应用，支持 macOS、Linux、Windows
+- ✅ **SQLite** - 嵌入式数据库，支持完全离线使用
+- ✅ **Element Plus** - 丰富的组件库，自动导入
+- ✅ **UnoCSS** - 原子化 CSS，代码量减少 75%
 
 ## 📦 安装
 
@@ -285,199 +226,24 @@ nacosdesk/
 │   │   └── auth/         # 认证模块
 │   ├── Cargo.toml        # Rust 依赖配置
 │   └── tauri.conf.json   # Tauri 应用配置
+├── docs/                 # 项目文档
+│   ├── development-guide.md    # 开发规范指南
+│   ├── git-conventions.md      # Git 规范配置
+│   └── configuration.md        # 配置说明
 ├── public/               # 静态资源
 │   ├── manifest.json     # PWA 清单文件
 │   └── img/              # 图片资源
-├── uno.config.ts         # UnoCSS 配置
-├── vite.config.ts        # Vite 配置（包含 JSX 插件和 PWA）
-├── tsconfig.json         # TypeScript 配置
-├── package.json
-├── commitlint.config.cjs # Commit 消息规范配置
-├── .husky/               # Git hooks
 └── README.md
 ```
 
-## 🔧 配置
+## 📚 文档
 
-### JSX + Composition API 配置
+详细文档请参考：
 
-项目已配置 Vue 3 JSX 和 Composition API 支持：
-
-```typescript
-// vite.config.ts
-import vueJsx from '@vitejs/plugin-vue-jsx'
-
-export default defineConfig({
-  plugins: [
-    vue(),
-    vueJsx(), // Vue 3 JSX 支持
-  ],
-})
-```
-
-```json
-// tsconfig.json
-{
-  "compilerOptions": {
-    "jsx": "preserve",
-    "jsxImportSource": "vue"
-  }
-}
-```
-
-### Nacos 服务器地址
-
-**重要**：本项目是 Nacos 3 Web Console 的桌面版本重新实现，所有 API 请求指向 **Nacos 服务器的 8080 端口**。
-
-默认服务器地址：`http://localhost:8080`
-
-可以通过环境变量配置：
-
-```bash
-# 设置 Nacos 服务器地址（8080 端口）
-VITE_API_BASE_URL=http://your-nacos-server:8080
-```
-
-**注意**：
-- Nacos 3 Web Console 默认运行在 **8080 端口**
-- 确保 Nacos 服务器已启动并监听 8080 端口
-- API 请求会自动转发到配置的服务器地址
-- Tauri 模式下，可以使用本地 SQLite 数据库替代 HTTP API
-
-### PWA 配置
-
-PWA 配置在 `vite.config.ts` 中：
-
-```typescript
-import { VitePWA } from 'vite-plugin-pwa'
-
-export default defineConfig({
-  plugins: [
-    VitePWA({
-      registerType: 'autoUpdate',
-      manifest: {
-        name: 'Nacos Desktop Console',
-        short_name: 'Nacos',
-        // ...
-      },
-    }),
-  ],
-})
-```
-
-### Tauri 配置
-
-Tauri 配置在 `src-tauri/tauri.conf.json` 中：
-
-```json
-{
-  "productName": "Nacos Desktop Console",
-  "version": "1.0.0",
-  "identifier": "com.nacosdesk.app",
-  "build": {
-    "frontendDist": "../dist",
-    "devUrl": "http://localhost:5174",
-    "beforeDevCommand": "pnpm dev",
-    "beforeBuildCommand": "pnpm build"
-  }
-}
-```
-
-### Git 规范配置
-
-项目使用 Git 规范工具：
-
-- **Husky** - Git hooks 管理（`.husky/` 目录）
-- **Commitlint** - Commit 消息规范检查（`commitlint.config.cjs`）
-- **Commitizen** - 交互式 Commit 工具（`pnpm commit`）
-- **Standard Version** - 版本管理（`pnpm release`）
-
-#### Commit 消息规范
-
-使用 Conventional Commits 规范：
-
-```
-<type>(<scope>): <subject>
-
-<body>
-
-<footer>
-```
-
-**类型（type）**：
-- `feat`: 新功能
-- `fix`: 修复 bug
-- `docs`: 文档更新
-- `style`: 代码格式调整
-- `refactor`: 重构
-- `perf`: 性能优化
-- `test`: 测试相关
-- `chore`: 构建/工具相关
-- `ci`: CI 配置
-- `build`: 构建系统
-
-**使用 Commitizen**：
-
-```bash
-pnpm commit
-```
-
-**版本发布**：
-
-```bash
-pnpm release
-```
-
-## 📚 开发规范
-
-### ⚠️ 核心规范（必须遵守）
-
-#### 1. 必须使用 JSX/TSX 语法
-
-- ❌ **禁止使用 `.vue` 文件**
-- ❌ **禁止使用 `<template>` 模板语法**
-- ❌ **禁止使用 `<script setup>`**
-- ✅ **所有组件必须使用 `.tsx` 扩展名**
-- ✅ **所有组件必须使用 `defineComponent` + `setup`**
-
-#### 2. 必须使用 Composition API
-
-- ✅ 使用 `ref`, `reactive`, `computed` 定义响应式状态
-- ✅ 使用 `watch`, `watchEffect` 监听变化
-- ✅ 使用 `onMounted`, `onUnmounted` 等生命周期钩子
-- ✅ 使用 composables 封装可复用逻辑
-
-#### 3. 必须使用 TypeScript
-
-- ✅ 所有文件使用 TypeScript
-- ✅ 定义明确的类型接口
-- ✅ 避免使用 `any`，优先使用具体类型
-- ✅ Props 必须定义类型
-
-#### 4. 必须使用国际化
-
-- ✅ 所有用户可见文本使用 `t()` 函数
-- ✅ 动态文本使用 `tWithParams()` 函数
-- ❌ 禁止硬编码中文或英文文本
-
-#### 5. 必须使用 UnoCSS
-
-- ✅ 优先使用 UnoCSS 原子类
-- ✅ 使用快捷方式减少重复代码
-- ❌ 禁止使用 `<style>` 标签
-- ❌ 禁止使用 SCSS/LESS
-
-#### 6. 必须使用 pnpm
-
-- ✅ 使用 `pnpm install` 安装依赖
-- ✅ 使用 `pnpm add` 添加依赖
-- ❌ 禁止使用 `npm` 或 `yarn`
-
-#### 7. 必须遵循 Git 规范
-
-- ✅ 使用 Conventional Commits 规范
-- ✅ 使用 `pnpm commit` 进行交互式提交
-- ✅ Commit 消息必须通过 Commitlint 检查
+- [开发规范指南](docs/development-guide.md) - 开发规范、代码风格和最佳实践
+- [Git 规范配置](docs/git-conventions.md) - Git 提交规范和版本管理
+- [配置说明](docs/configuration.md) - 项目各项配置详解
+- [AGENTS.md](AGENTS.md) - AI 代理项目指南
 
 ## 📈 性能优化
 

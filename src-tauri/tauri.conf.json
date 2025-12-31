@@ -1,0 +1,44 @@
+{
+  "$schema": "https://raw.githubusercontent.com/tauri-apps/tauri/2.0/tooling/cli/schema.json",
+  "productName": "Nacos Desktop",
+  "version": "1.0.0",
+  "identifier": "com.nacosdesk.app",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:5174",
+    "beforeDevCommand": "pnpm dev",
+    "beforeBuildCommand": "pnpm build"
+  },
+  "app": {
+    "security": {
+      "csp": null
+    },
+    "windows": [
+      {
+        "title": "Nacos Desktop",
+        "fullscreen": false,
+        "resizable": true,
+        "width": 1280,
+        "height": 800,
+        "minWidth": 1024,
+        "minHeight": 600
+      }
+    ],
+    "withGlobalTauri": true
+  },
+  "plugins": {
+    "notification": {
+      "all": true
+    }
+  },
+  "bundle": {
+    "icon": ["icons/icon.icns", "icons/icon.ico", "icons/icon.png"],
+    "targets": ["dmg", "app", "appimage", "deb"],
+    "macOS": {
+      "minimumSystemVersion": "10.13",
+      "entitlements": null,
+      "exceptionDomain": ""
+    }
+  }
+}
+

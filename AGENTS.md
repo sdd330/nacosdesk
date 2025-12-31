@@ -1,4 +1,4 @@
-# AGENTS.md - Nacos Desktop Console 项目指南
+# AGENTS.md - Nacos Desktop 项目指南
 
 > 本文档为 AI 代理（Agents）提供项目结构、开发规范和最佳实践指引
 
@@ -6,9 +6,11 @@
 
 ### 项目描述
 
-**Nacos Desktop Console** 是基于 Vue 3.5 + TypeScript + JSX + Composition API + Tauri 2.0 + SQLite 重新实现的 Nacos Web Console 桌面版本。
+**Nacos Desktop** 是基于 Vue 3.5 + TypeScript + JSX + Composition API + Tauri 2.0 + SQLite 重新实现的 Nacos Web Console 桌面版本。
 
-**项目目标**：将原 React + Redux + @alifd/next 实现的 Nacos Console UI 迁移到 Vue 3.5 + Pinia + Element Plus，使用 JSX/TSX 语法和 Composition API，提供更好的开发体验和用户体验。
+**项目目标**：将原 React + Redux + @alifd/next 实现的 Nacos Console UI 完全重新实现为 Vue 3.5 + Pinia + Element Plus，使用 JSX/TSX 语法和 Composition API，提供更好的开发体验和用户体验。
+
+**核心目标**：完全重新实现 Nacos Web Console 的所有核心功能，包括配置管理、服务管理、命名空间管理、权限控制、集群管理等模块。
 
 ### 核心信息
 
@@ -29,11 +31,14 @@
 - ✅ **Tauri 2.0** - 跨平台桌面应用框架
 - ✅ **SQLite** - 嵌入式数据库支持
 
-### Nacos Web Console 核心功能模块
+---
+
+## 🎯 Nacos Web Console 核心功能模块
 
 本项目完全重新实现了 Nacos Web Console 的所有核心功能：
 
-#### 1. 配置管理模块（Configuration Management）
+### 1. 配置管理模块（Configuration Management）
+
 - **功能**：配置的创建、编辑、查询、同步、回滚和历史版本管理
 - **页面**：
   - 配置列表（ConfigurationManagement）
@@ -54,7 +59,8 @@
   - 配置历史版本管理
   - 配置变更监听
 
-#### 2. 服务管理模块（Service Management）
+### 2. 服务管理模块（Service Management）
+
 - **功能**：服务注册与发现管理、实例管理、集群管理、订阅者查询
 - **页面**：
   - 服务列表（ServiceList）
@@ -68,7 +74,8 @@
   - 订阅者监控
   - 服务集群管理
 
-#### 3. 命名空间管理模块（Namespace Management）
+### 3. 命名空间管理模块（Namespace Management）
+
 - **功能**：多环境隔离、命名空间的创建、编辑和删除
 - **页面**：
   - 命名空间列表（Namespace）
@@ -78,7 +85,8 @@
   - 命名空间存在性检查
   - 级联删除（删除命名空间时删除相关配置和服务）
 
-#### 4. 权限控制模块（Authority Control）
+### 4. 权限控制模块（Authority Control）
+
 - **功能**：用户管理、角色管理、权限管理，实现细粒度的访问控制
 - **页面**：
   - 用户管理（UserManagement）
@@ -93,7 +101,8 @@
   - Token 管理（存储、验证、刷新、过期处理）
   - 命名空间权限控制（可选）
 
-#### 5. 集群管理模块（Cluster Management）
+### 5. 集群管理模块（Cluster Management）
+
 - **功能**：集群节点管理、节点状态查看、节点离开集群
 - **页面**：
   - 集群节点列表（ClusterNodeList）
@@ -103,7 +112,8 @@
   - 集群操作（节点加入/离开）
   - 集群配置管理
 
-#### 6. 设置中心模块（Setting Center）
+### 6. 设置中心模块（Setting Center）
+
 - **功能**：应用设置、主题切换、语言切换、命名空间显示模式配置
 - **页面**：
   - 设置中心（SettingCenter）
@@ -113,7 +123,8 @@
   - 国际化切换（中文/英文）
   - 命名空间显示模式配置
 
-#### 7. AI 功能模块（可选）
+### 7. AI 功能模块（可选）
+
 - **MCP 管理**：MCP 服务器管理、工具管理、导入导出
 - **Agent 管理**：Agent 管理、配置管理、运行状态监控
 - **技术要点**：MCP 协议支持、Agent 生命周期管理、配置管理
@@ -185,76 +196,20 @@ nacosdesk/
 │   │   ├── main.rs             # Rust 主程序
 │   │   ├── db/                 # 数据库模块
 │   │   │   ├── mod.rs
-│   │   └── schema.sql          # 数据库 schema
+│   │   └── migrations/         # 数据库迁移脚本
 │   │   └── auth/               # 认证模块
 │   │       └── mod.rs
 │   ├── Cargo.toml              # Rust 依赖配置
 │   └── tauri.conf.json         # Tauri 应用配置
+├── docs/                        # 项目文档
+│   ├── development-guide.md    # 开发规范指南
+│   ├── git-conventions.md      # Git 规范配置
+│   └── configuration.md        # 配置说明
 ├── public/                      # 静态资源
 │   ├── manifest.json           # PWA 清单文件
 │   └── img/                    # 图片资源
-├── .husky/                      # Git hooks
-│   ├── pre-commit              # Pre-commit hook
-│   └── commit-msg              # Commit-msg hook
-├── uno.config.ts                # UnoCSS 配置
-├── vite.config.ts               # Vite 配置（包含 JSX 插件和 PWA）
-├── tsconfig.json                 # TypeScript 配置
-├── commitlint.config.cjs        # Commit 消息规范配置
-└── package.json
+└── README.md
 ```
-
----
-
-## 🎯 核心开发规范
-
-### ⚠️ 重要规则（必须遵守）
-
-#### 1. 必须使用 JSX/TSX 语法
-
-- ❌ **禁止使用 `.vue` 文件**
-- ❌ **禁止使用 `<template>` 模板语法**
-- ❌ **禁止使用 `<script setup>`**
-- ✅ **所有组件必须使用 `.tsx` 扩展名**
-- ✅ **所有组件必须使用 `defineComponent` + `setup`**
-
-#### 2. 必须使用 Composition API
-
-- ✅ 使用 `ref`, `reactive`, `computed` 定义响应式状态
-- ✅ 使用 `watch`, `watchEffect` 监听变化
-- ✅ 使用 `onMounted`, `onUnmounted` 等生命周期钩子
-- ✅ 使用 composables 封装可复用逻辑
-
-#### 3. 必须使用 TypeScript
-
-- ✅ 所有文件使用 TypeScript
-- ✅ 定义明确的类型接口
-- ✅ 避免使用 `any`，优先使用具体类型
-- ✅ Props 必须定义类型
-
-#### 4. 必须使用国际化
-
-- ✅ 所有用户可见文本使用 `t()` 函数
-- ✅ 动态文本使用 `tWithParams()` 函数
-- ❌ 禁止硬编码中文或英文文本
-
-#### 5. 必须使用 UnoCSS
-
-- ✅ 优先使用 UnoCSS 原子类
-- ✅ 使用快捷方式减少重复代码
-- ❌ 禁止使用 `<style>` 标签
-- ❌ 禁止使用 SCSS/LESS
-
-#### 6. 必须使用 pnpm
-
-- ✅ 使用 `pnpm install` 安装依赖
-- ✅ 使用 `pnpm add` 添加依赖
-- ❌ 禁止使用 `npm` 或 `yarn`
-
-#### 7. 必须遵循 Git 规范
-
-- ✅ 使用 Conventional Commits 规范
-- ✅ 使用 `pnpm commit` 进行交互式提交
-- ✅ Commit 消息必须通过 Commitlint 检查
 
 ---
 
@@ -314,67 +269,6 @@ export default defineComponent<ComponentProps>({
 })
 ```
 
-### JSX 语法要点
-
-**条件渲染**：
-```tsx
-{condition && <div>Content</div>}
-{condition ? <div>True</div> : <div>False</div>}
-```
-
-**列表渲染**：
-```tsx
-{items.map((item, index) => (
-  <div key={index}>{item.name}</div>
-))}
-```
-
-**事件处理**：
-```tsx
-<ElButton onClick={handleClick}>按钮</ElButton>
-<ElInput onUpdate:modelValue={(val: string) => (value.value = val)} />
-```
-
-**v-model 双向绑定**：
-```tsx
-<ElInput
-  modelValue={value.value}
-  onUpdate:modelValue={(val: string) => (value.value = val)}
-/>
-```
-
-### Pinia Store 标准模式
-
-```typescript
-import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-import { fetchData } from '@/api/example'
-
-export const useExampleStore = defineStore('example', () => {
-  const data = ref<any[]>([])
-  const loading = ref(false)
-  const error = ref<string | null>(null)
-  
-  const count = computed(() => data.value.length)
-  
-  async function fetch() {
-    loading.value = true
-    error.value = null
-    try {
-      const res = await fetchData()
-      data.value = res.data || []
-    } catch (err: any) {
-      error.value = err.message
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-  
-  return { data, loading, error, count, fetch }
-})
-```
-
 ### API 调用（支持 Tauri/HTTP 切换）
 
 ```typescript
@@ -389,42 +283,6 @@ export async function login(params: LoginParams): Promise<LoginResponse> {
     return httpClient.post('/v3/auth/user/login', params)
   }
 }
-```
-
----
-
-## 🎨 样式规范
-
-### UnoCSS 使用规范
-
-```tsx
-// ✅ 使用原子类
-<div class="flex items-center justify-between p-4 bg-white rounded-lg shadow">
-  <h1 class="text-2xl font-bold text-gray-800">标题</h1>
-</div>
-
-// ✅ 使用快捷方式
-<div class="flex-center">  // 等同于 flex items-center justify-center
-
-// ✅ 响应式设计
-<div class="w-full md:w-1/2 lg:w-1/3">
-```
-
----
-
-## 🌐 国际化规范
-
-```tsx
-import { useI18n } from '@/composables/useI18n'
-
-const { t, tWithParams } = useI18n()
-
-return () => (
-  <div>
-    <h1>{t('config.title')}</h1>
-    <p>{tWithParams('config.confirmDelete', { dataId: 'example' })}</p>
-  </div>
-)
 ```
 
 ---
@@ -462,78 +320,13 @@ return () => (
 
 ---
 
-## 🚫 禁止事项
+## 📚 参考文档
 
-1. ❌ 不要使用 `.vue` 文件
-2. ❌ 不要使用模板语法（`<template>`, `v-if`, `v-for`）
-3. ❌ 不要使用 `<script setup>`
-4. ❌ 不要硬编码文本
-5. ❌ 不要使用 `<style>` 标签
-6. ❌ 不要使用 npm/yarn
-7. ❌ 不要使用 `any` 类型
-8. ❌ 不要在渲染函数中直接计算（使用 `computed`）
-9. ❌ 不要直接修改 props（使用 `emit`）
-10. ❌ 不要忘记类型定义
+详细文档请参考：
 
----
-
-## ✅ 推荐做法
-
-1. **组件命名**：`PascalCase.tsx`（如 `UserManagement.tsx`）
-2. **类型定义**：在 `src/types/` 目录统一管理
-3. **错误处理**：在 Store 中统一处理
-4. **性能优化**：使用 `computed` 缓存计算结果
-5. **代码组织**：相关功能放在同一目录
-6. **代码注释**：组件顶部添加文件说明
-
----
-
-## 🔍 调试和开发
-
-### 开发命令
-
-```bash
-# Web 开发
-pnpm dev
-
-# Tauri 开发
-pnpm tauri:dev
-
-# 类型检查
-pnpm typecheck
-
-# 代码检查
-pnpm lint
-
-# 构建
-pnpm build
-pnpm tauri:build
-```
-
-### Git 工作流
-
-```bash
-# 交互式提交（推荐）
-pnpm commit
-
-# 版本发布
-pnpm release
-```
-
----
-
-## 📚 参考资源
-
-### 官方文档
-
-- [Vue 3 文档](https://vuejs.org/)
-- [Vue 3 JSX 文档](https://github.com/vuejs/babel-plugin-jsx)
-- [Element Plus 文档](https://element-plus.org/)
-- [Pinia 文档](https://pinia.vuejs.org/)
-- [UnoCSS 文档](https://unocss.dev/)
-- [Vue I18n 文档](https://vue-i18n.intlify.dev/)
-- [Tauri 文档](https://v2.tauri.app/)
-- [PWA 文档](https://web.dev/progressive-web-apps/)
+- [开发规范指南](docs/development-guide.md) - 开发规范、代码风格和最佳实践
+- [Git 规范配置](docs/git-conventions.md) - Git 提交规范和版本管理
+- [配置说明](docs/configuration.md) - 项目各项配置详解
 
 ### 关键文件说明
 
@@ -561,16 +354,7 @@ pnpm release
 
 ### 代码审查清单
 
-- [ ] 所有组件使用 `.tsx` 扩展名
-- [ ] 所有组件使用 `defineComponent` + `setup`
-- [ ] 所有用户可见文本使用 `t()` 或 `tWithParams()`
-- [ ] 所有 Props 定义了类型
-- [ ] 没有使用 `any` 类型
-- [ ] 没有使用 `<style>` 标签
-- [ ] 没有硬编码文本
-- [ ] 类型检查通过
-- [ ] 代码可以正常运行
-- [ ] Commit 消息符合规范
+参考 [开发规范指南](docs/development-guide.md#-ai-代理代码审查清单) 中的完整清单。
 
 ---
 

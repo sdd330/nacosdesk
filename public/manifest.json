@@ -1,0 +1,48 @@
+{
+  "name": "Nacos Desktop",
+  "short_name": "Nacos",
+  "description": "An easy-to-use dynamic service discovery, configuration and service management platform for building cloud native applications",
+  "theme_color": "#409eff",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/img/nacos.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/img/nacos.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["developer", "tools"],
+  "shortcuts": [
+    {
+      "name": "配置管理",
+      "short_name": "配置",
+      "description": "管理 Nacos 配置",
+      "url": "/configurationManagement",
+      "icons": [{ "src": "/img/nacos.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "服务管理",
+      "short_name": "服务",
+      "description": "管理 Nacos 服务",
+      "url": "/serviceManagement",
+      "icons": [{ "src": "/img/nacos.png", "sizes": "192x192" }]
+    }
+  ]
+}
+
