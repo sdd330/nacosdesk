@@ -22,7 +22,8 @@
 - **技术栈**: Vue 3.5 + TypeScript + JSX + Element Plus + UnoCSS + Pinia + Tauri 2.0 + SQLite
 - **包管理器**: **pnpm**（必须使用，禁止使用 npm 或 yarn）
 - **开发服务器**: http://localhost:5174
-- **API 端口**: 8080 (Nacos 3 Web Console)
+- **Web Console 端口**: 8080 (Nacos 3 Web Console)
+- **API 服务器端口**: 8848 (Nacos Standalone API Server，支持 Spring Boot 连接)
 
 ### 项目目标
 
@@ -33,6 +34,8 @@
 - 权限控制（Authority Control）
 - 集群管理（Cluster Management）
 - 设置中心（Setting Center）
+
+**新增功能**：作为 Nacos Standalone API 服务器（监听 8848 端口），支持 Spring Boot 等外部应用连接和使用。
 
 ### 项目特点
 

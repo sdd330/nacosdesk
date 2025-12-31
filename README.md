@@ -56,7 +56,9 @@
 #### 项目特点
 
 - **Nacos 3 Web Console** 运行在 **8080 端口**
+- **Nacos Server API** 运行在 **8848 端口**（Standalone 模式）
 - 本项目通过桌面应用形式完全重新实现 Web Console 的所有功能
+- **可作为 Nacos Standalone API 服务器**，支持 Spring Boot 等外部应用通过 8848 端口连接
 - 支持 **Web 模式**（HTTP API）和 **桌面模式**（Tauri + SQLite）
 - 所有功能基于 SQLite 数据库实现，支持完全离线使用
 
@@ -69,6 +71,7 @@
 - ✅ 支持 PWA（渐进式 Web 应用）
 - ✅ 支持 Tauri 2.0 桌面应用
 - ✅ 支持 SQLite 嵌入式数据库
+- 🚧 **支持作为 Nacos Standalone API 服务器**（监听 8848 端口，支持 Spring Boot 连接）
 
 ## 🚀 技术栈
 
