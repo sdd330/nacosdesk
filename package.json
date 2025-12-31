@@ -1,0 +1,49 @@
+{
+  "name": "nacosdesk",
+  "version": "1.0.0",
+  "description": "Nacos Console Desktop Application",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:rolldown": "rolldown -c rolldown.config.ts",
+    "build:rolldown:watch": "rolldown -c rolldown.config.ts --watch",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
+    "typecheck": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
+    "@iarna/toml": "^2.2.5",
+    "@monaco-editor/loader": "^1.7.0",
+    "element-plus": "^2.12.0",
+    "js-yaml": "^4.1.1",
+    "mitt": "^3.0.1",
+    "monaco-editor": "^0.55.1",
+    "pinia": "^3.0.4",
+    "vue": "^3.5.13",
+    "vue-i18n": "^9.14.5",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@rushstack/eslint-patch": "^1.15.0",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^25.0.2",
+    "@unocss/vite": "^66.5.12",
+    "@vitejs/plugin-vue": "^6.0.3",
+    "@vitejs/plugin-vue-jsx": "^5.1.3",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "@vue/eslint-config-typescript": "^14.6.0",
+    "@vue/tsconfig": "^0.8.1",
+    "eslint": "^9.39.2",
+    "eslint-plugin-vue": "^10.6.2",
+    "rolldown": "1.0.0-beta.57",
+    "typescript": "^5.9.3",
+    "unocss": "^66.5.12",
+    "unplugin-auto-import": "^20.3.0",
+    "unplugin-vue-components": "^30.0.0",
+    "vite": "^7.2.7",
+    "vite-plugin-pwa": "^1.2.0",
+    "vue-tsc": "^3.1.8"
+  }
+}
