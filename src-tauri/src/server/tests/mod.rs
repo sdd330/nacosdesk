@@ -24,3 +24,19 @@ mod health_tests;
 #[cfg(test)]
 mod integration_tests;
 
+// 集成测试模块（按功能拆分）
+#[cfg(test)]
+mod config_integration_tests;
+#[cfg(test)]
+mod service_integration_tests;
+#[cfg(test)]
+mod instance_integration_tests;
+#[cfg(test)]
+mod auth_integration_tests;
+#[cfg(test)]
+mod health_integration_tests;
+#[cfg(test)]
+mod namespace_integration_tests;
+#[cfg(test)]
+mod console_api_integration_tests;
+

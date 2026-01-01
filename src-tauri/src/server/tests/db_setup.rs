@@ -238,6 +238,65 @@ impl TestDatabase {
         pool.close().await;
         Ok(())
     }
+    
+    /// 插入测试订阅者（配置监听者）
+    pub async fn insert_test_subscriber(
+        &self,
+        data_id: &str,
+        group_id: &str,
+        tenant_id: &str,
+        client_ip: &str,
+        client_port: Option<i32>,
+        md5: Option<&str>,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        let database_url = format!("sqlite:{}", self.db_path.display());
+        let pool = sqlx::SqlitePool::connect(&database_url).await?;
+        
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs() as i64;
+        
+        sqlx::query(
+            "INSERT OR REPLACE INTO subscribers (data_id, group_id, tenant_id, client_ip, client_port, md5, last_poll_time, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+        )
+        .bind(data_id)
+        .bind(group_id)
+        .bind(tenant_id)
+        .bind(client_ip)
+        .bind(client_port)
+        .bind(md5)
+        .bind(now)
+        .bind(now)
+        .execute(&pool)
+        .await?;
+        
+        pool.close().await;
+        Ok(())
+    }
+    
+    /// 获取配置 ID
+    pub async fn get_config_id(
+        &self,
+        data_id: &str,
+        group: &str,
+        tenant: &str,
+    ) -> Result<Option<i64>, Box<dyn std::error::Error>> {
+        let database_url = format!("sqlite:{}", self.db_path.display());
+        let pool = sqlx::SqlitePool::connect(&database_url).await?;
+        
+        let result: Option<(i64,)> = sqlx::query_as(
+            "SELECT id FROM config_info WHERE data_id = ?1 AND group_id = ?2 AND tenant_id = ?3"
+        )
+        .bind(data_id)
+        .bind(group)
+        .bind(tenant)
+        .fetch_optional(&pool)
+        .await?;
+        
+        pool.close().await;
+        Ok(result.map(|(id,)| id))
+    }
 }
 
 impl Drop for TestDatabase {

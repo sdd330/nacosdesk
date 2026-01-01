@@ -9,8 +9,15 @@
 - `auth_tests.rs` - 认证 API 测试
 - `health_tests.rs` - 健康检查 API 测试
 
-### 集成测试
-- `integration_tests.rs` - 使用真实 SQLite 数据库的完整 API 集成测试
+### 集成测试（按模块拆分）
+- `integration_tests.rs` - 集成测试场景（跨模块的完整业务流程测试）
+- `config_integration_tests.rs` - 配置管理 API 集成测试
+- `service_integration_tests.rs` - 服务管理 API 集成测试
+- `instance_integration_tests.rs` - 实例管理 API 集成测试
+- `auth_integration_tests.rs` - 认证 API 集成测试
+- `health_integration_tests.rs` - 健康检查 API 集成测试
+- `namespace_integration_tests.rs` - 命名空间管理 API 集成测试
+- `console_api_integration_tests.rs` - Console API 集成测试
 - `db_setup.rs` - 测试数据库设置和清理辅助模块
 
 ## 运行测试
@@ -19,11 +26,20 @@
 # 运行所有测试
 cargo test --lib server::tests
 
-# 运行集成测试
-cargo test --lib server::tests::integration_tests
+# 运行所有集成测试
+cargo test --lib server::tests
+
+# 运行特定模块的集成测试
+cargo test --lib server::tests::config_integration_tests
+cargo test --lib server::tests::service_integration_tests
+cargo test --lib server::tests::instance_integration_tests
+cargo test --lib server::tests::auth_integration_tests
+cargo test --lib server::tests::health_integration_tests
+cargo test --lib server::tests::namespace_integration_tests
+cargo test --lib server::tests::console_api_integration_tests
 
 # 运行特定测试
-cargo test --lib server::tests::integration_tests::test_publish_config
+cargo test --lib server::tests::config_integration_tests::test_publish_config_success
 ```
 
 ## 测试数据库

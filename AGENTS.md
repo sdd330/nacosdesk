@@ -608,6 +608,9 @@ src/
 | 国际化 | `src/locales/zh-CN.ts` | 中文语言包 |
 | Rust 后端 | `src-tauri/src/main.rs` | Rust 主程序 |
 | 数据库模块 | `src-tauri/src/db/mod.rs` | 数据库模块 |
+| API 服务器 | `src-tauri/src/server/` | Nacos Standalone API 服务器 |
+| 集成测试 | `src-tauri/src/server/tests/` | 集成测试（193 个测试用例） |
+| 测试文档 | `src-tauri/src/server/tests/README.md` | 测试框架说明 |
 
 ---
 
@@ -888,10 +891,119 @@ export async function getConfigList(params: ConfigQueryParams) {
 
 - 运行类型检查（`pnpm typecheck`）
 - 运行代码检查（`pnpm lint`）
+- 运行 Rust 后端测试（`cd src-tauri && cargo test --lib server::tests`）
 - 提交代码（`pnpm commit`）
 
 ---
 
-**最后更新**: 2024-12-31
+## 🧪 测试框架
+
+### 测试概述
+
+项目包含完整的集成测试框架，**193 个集成测试用例，覆盖率 100%**：
+
+| 模块 | 测试用例数 | 状态 | 测试文件 |
+| :--- | :--------: | :--: | :------- |
+| 配置管理 API | 63 | ✅ 100% | `config_integration_tests.rs` |
+| 实例管理 API | 41 | ✅ 100% | `instance_integration_tests.rs` |
+| 服务管理 API | 29 | ✅ 100% | `service_integration_tests.rs` |
+| 认证 API | 13 | ✅ 100% | `auth_integration_tests.rs` |
+| 命名空间管理 API | 12 | ✅ 100% | `namespace_integration_tests.rs` |
+| 集成测试场景 | 21 | ✅ 100% | `integration_tests.rs` |
+| Console API | 5 | ✅ 100% | `console_api_integration_tests.rs` |
+| 健康检查 API | 9 | ✅ 100% | `health_integration_tests.rs` |
+
+### 测试目录结构
+
+测试文件位于 `src-tauri/src/server/tests/` 目录：
+
+```text
+src-tauri/src/server/tests/
+├── config_integration_tests.rs      # 配置管理 API 集成测试（63 个）
+├── instance_integration_tests.rs    # 实例管理 API 集成测试（41 个）
+├── service_integration_tests.rs     # 服务管理 API 集成测试（29 个）
+├── auth_integration_tests.rs        # 认证 API 集成测试（13 个）
+├── namespace_integration_tests.rs   # 命名空间管理 API 集成测试（12 个）
+├── integration_tests.rs             # 集成测试场景（21 个）
+├── console_api_integration_tests.rs # Console API 集成测试（5 个）
+├── health_integration_tests.rs      # 健康检查 API 集成测试（9 个）
+├── db_setup.rs                      # 测试数据库设置和清理辅助模块
+├── helpers.rs                       # 测试辅助函数
+├── mod.rs                           # 测试模块声明
+└── README.md                        # 测试文档说明
+```
+
+### 运行测试
+
+```bash
+# 运行所有测试
+cd src-tauri && cargo test --lib server::tests
+
+# 运行特定模块的测试
+cargo test --lib server::tests::config_integration_tests
+cargo test --lib server::tests::service_integration_tests
+
+# 运行特定测试用例
+cargo test --lib server::tests::config_integration_tests::test_publish_config_success
+
+# 运行测试并显示输出
+cargo test --lib server::tests -- --nocapture
+```
+
+### 测试辅助方法
+
+`db_setup.rs` 提供了以下测试辅助方法：
+
+- `TestDatabase::new()` - 创建测试数据库
+- `insert_test_user()` - 插入测试用户
+- `insert_test_config()` - 插入测试配置
+- `insert_test_service()` - 插入测试服务
+- `insert_test_instance()` - 插入测试实例
+- `insert_test_namespace()` - 插入测试命名空间
+- `insert_test_subscriber()` - 插入测试订阅者
+- `get_config_id()` - 获取配置 ID
+- `cleanup()` - 清理所有测试数据
+
+### 测试实现模式
+
+```rust
+#[tokio::test]
+async fn test_example() {
+    // 1. 创建测试数据库
+    let test_db = TestDatabase::new().await.unwrap();
+    
+    // 2. 插入测试数据
+    test_db.insert_test_config("test-config", "DEFAULT_GROUP", "public", "content").await.unwrap();
+    
+    // 3. 创建路由并测试 API
+    let router = create_router("/nacos".to_string(), test_db.app.clone());
+    let request = Request::builder()
+        .method("GET")
+        .uri("/nacos/v1/cs/configs?dataId=test-config&group=DEFAULT_GROUP&tenant=public")
+        .body(Body::empty())
+        .unwrap();
+    
+    let response = router.oneshot(request).await.unwrap();
+    
+    // 4. 验证响应
+    assert_eq!(response.status(), StatusCode::OK);
+    
+    // 5. 清理测试数据
+    test_db.cleanup().await.unwrap();
+}
+```
+
+### 测试说明
+
+- **集成测试**: 使用真实的 SQLite 数据库，每个测试都会创建独立的临时数据库
+- **测试数据**: 使用 `db_setup.rs` 中的辅助方法插入测试数据
+- **测试清理**: 测试后自动清理测试数据，临时数据库文件会自动删除
+- **测试覆盖**: 覆盖所有已实现的 API 功能，包括正常场景、边界情况和错误处理
+
+**详细测试文档**: 请参考 [src-tauri/src/server/tests/README.md](src-tauri/src/server/tests/README.md)
+
+---
+
+**最后更新**: 2025-01-27（添加测试框架说明）
 
 **维护者**: 开发团队
