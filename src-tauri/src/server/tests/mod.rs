@@ -43,4 +43,6 @@ mod console_api_integration_tests;
 mod instance_standard_api_tests;
 #[cfg(test)]
 mod config_standard_api_tests;
+#[cfg(test)]
+mod nacos_compatibility_tests;
 

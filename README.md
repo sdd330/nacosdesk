@@ -80,7 +80,13 @@
 >   - 实例管理：`/nacos/v1/ns/instance*`（实例 CRUD、列表、心跳、健康状态、批量元数据）
 >   - 命名空间：`/nacos/v1/console/namespaces`（命名空间 CRUD）
 >   - 运维 / 监控：`/nacos/v1/ns/operator/*`、`/nacos/v1/ns/raft/leader`、`/nacos/v1/cs/health`、`/nacos/v1/ns/health`
-> - 所有上述接口均有对应的 **Rust 集成测试**，并在新增的 `instance_standard_api_tests` 中对“响应格式与官方示例”做了专门校验，确保 Spring Boot / Spring Cloud Alibaba Nacos **开箱即可对接**。
+> - 所有上述接口均有对应的 **Rust 集成测试**，包括：
+>   - `config_standard_api_tests.rs`：验证配置管理 API 的响应内容类型与示例值
+>   - `instance_standard_api_tests.rs`：验证实例管理 API 的响应格式与官方示例一致
+>   - `nacos_compatibility_tests.rs`：**参考本地运行的 Nacos Server（Java 版本）的真实 API 响应格式**，验证 Nacos Desktop Standalone API 服务的实现与标准 Nacos Server 一致
+>     - **完整 CRUD 覆盖**：配置管理（Create/Read/Update/Delete）、服务管理（Create/Read/Update/Delete/List）、实例管理（Create/Read/Update/Delete）、命名空间管理（Create/Read/Update/Delete）
+>     - **响应格式验证**：确保所有 API 的响应格式（Content-Type、响应体结构、字段名称）与标准 Nacos Server 完全一致
+> - 确保 Spring Boot / Spring Cloud Alibaba Nacos **开箱即可对接**。
 
 ### ✅ 项目状态
 
@@ -91,7 +97,7 @@
 - ✅ **命名空间管理**：完整的命名空间 CRUD 功能
 - ✅ **认证和权限**：用户登录、Token 认证、用户/角色/权限管理
 - ✅ **API 服务器**：完整的 Nacos Standalone API 实现，与 nacos-develop 保持一致
-- ✅ **测试框架**：完整的单元测试和集成测试框架，**193 个集成测试用例，覆盖率 100%**
+- ✅ **测试框架**：完整的单元测试和集成测试框架，**210+ 个集成测试用例，覆盖率 100%**，包含完整的 CRUD 兼容性测试
 
 **项目定位**：单机版桌面应用，专注于 Nacos 核心功能实现，可以投入使用。
 
@@ -251,7 +257,7 @@ nacosdesk/
 │   │   ├── server/       # Nacos Standalone API 服务器
 │   │   │   ├── handlers/ # API 处理器
 │   │   │   ├── router.rs # 路由配置
-│   │   │   └── tests/    # 集成测试（203 个测试用例）
+│   │   │   └── tests/    # 集成测试（210+ 个测试用例，包含完整 CRUD 兼容性测试）
 │   │   ├── db/           # 数据库模块
 │   │   └── auth/         # 认证模块
 │   ├── Cargo.toml        # Rust 依赖配置
@@ -270,7 +276,7 @@ nacosdesk/
 
 ### 测试覆盖率
 
-项目包含完整的集成测试框架，**193 个集成测试用例，覆盖率 100%**：
+项目包含完整的集成测试框架，**210+ 个集成测试用例，覆盖率 100%**：
 
 | 模块 | 测试用例数 | 状态 |
 | :--- | :--------: | :--: |
@@ -282,6 +288,13 @@ nacosdesk/
 | 集成测试场景 | 21 | ✅ 100% |
 | Console API | 5 | ✅ 100% |
 | 健康检查 API | 9 | ✅ 100% |
+| **标准 API 兼容性测试** | **7** | ✅ 100% |
+| **Nacos 兼容性测试（完整 CRUD）** | **17** | ✅ 100% |
+
+> **新增测试说明**：
+>
+> - **标准 API 兼容性测试**：验证 API 响应格式与官方 OpenAPI 文档一致
+> - **Nacos 兼容性测试**：参考本地运行的 Nacos Server（Java 版本）的真实 API 响应格式，**完整覆盖所有 CRUD 操作**（配置、服务、实例、命名空间），确保与标准 Nacos Server 完全兼容
 
 ### 测试目录结构
 
@@ -297,6 +310,9 @@ src-tauri/src/server/tests/
 ├── integration_tests.rs             # 集成测试场景（21 个）
 ├── console_api_integration_tests.rs # Console API 集成测试（5 个）
 ├── health_integration_tests.rs      # 健康检查 API 集成测试（9 个）
+├── config_standard_api_tests.rs     # 配置管理标准 API 测试（4 个）
+├── instance_standard_api_tests.rs  # 实例管理标准 API 测试（4 个）
+├── nacos_compatibility_tests.rs     # Nacos 兼容性测试（17 个，完整 CRUD）
 ├── db_setup.rs                      # 测试数据库设置和清理辅助模块
 └── README.md                         # 测试文档说明
 ```

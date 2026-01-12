@@ -143,12 +143,13 @@ async fn test_<api_name>_<scenario>() {
 - **配置管理 API**  
   - 覆盖：发布 / 获取 / 删除 / 历史 / 上一版本 / 监听 / 导入 / 导出 / 克隆 / Beta / 灰度等完整链路  
   - 兼容性：与官方 Nacos OpenAPI 文档参数、响应结构保持一致  
+  - 标准测试：`config_standard_api_tests.rs` 验证 GET/POST/DELETE `/cs/configs` 的响应内容类型与示例值  
 - **服务管理 API**  
   - 覆盖：服务 CRUD、服务列表、订阅者查询等  
   - 兼容性：`/nacos/v1/ns/service`、`/nacos/v1/ns/service/list` 响应结构对齐官方示例  
 - **实例管理 API**  
   - 覆盖：实例 CRUD、列表、心跳、健康状态、批量元数据更新 / 删除等  
-  - 兼容性：新增 `instance_standard_api_tests.rs`，对 `/instance/list` 与 `/instance/beat` 的响应字段进行“逐字段”校验  
+  - 兼容性：新增 `instance_standard_api_tests.rs`，对 `/instance/list` 与 `/instance/beat` 的响应字段进行"逐字段"校验  
 - **命名空间管理 API**  
   - 覆盖：命名空间 CRUD、命名空间隔离、级联删除配置与服务  
 - **认证 API**  
@@ -156,8 +157,36 @@ async fn test_<api_name>_<scenario>() {
 - **健康检查 / 运维 API**  
   - 覆盖：配置 / 命名服务健康检查、服务端健康与指标、运维开关、服务器列表、Raft leader 等  
   - 兼容性：返回字段与官方 Nacos Console 使用的接口保持兼容，满足 Spring Boot / Nacos Client 探活需求  
+- **Nacos 兼容性测试** ⭐ 新增  
+  - 文件：`nacos_compatibility_tests.rs`  
+  - 目的：参考本地运行的 Nacos Server（Java 版本）的真实 API 响应格式，验证 Nacos Desktop Standalone API 服务的实现与标准 Nacos Server 一致  
+  - 测试内容（**完整 CRUD 覆盖**）：
+    - **配置管理 CRUD**：
+      - POST `/nacos/v1/cs/configs` - 创建配置（验证响应 Body: "true"）
+      - GET `/nacos/v1/cs/configs` - 获取配置（验证响应头格式：Content-Type、Config-Type、Content-MD5、Last-Modified 等）
+      - POST `/nacos/v1/cs/configs` - 更新配置（通过 POST 更新已存在的配置）
+      - DELETE `/nacos/v1/cs/configs` - 删除配置（验证响应格式：Content-Type: application/json，Body: "true"）
+    - **服务管理 CRUD**：
+      - POST `/nacos/v1/ns/service` - 创建服务（验证响应 Body: "ok"）
+      - GET `/nacos/v1/ns/service` - 查询服务详情（验证响应格式：包含 name、groupName、namespaceId、protectThreshold、metadata、hosts 等字段）
+      - PUT `/nacos/v1/ns/service` - 更新服务（验证响应 Body: "ok"）
+      - DELETE `/nacos/v1/ns/service` - 删除服务（验证响应 Body: "ok"）
+      - GET `/nacos/v1/ns/service/list` - 查询服务列表（验证响应格式：{"count":<number>,"doms":[...]}）
+    - **实例管理 CRUD**：
+      - POST `/nacos/v1/ns/instance` - 注册实例（验证响应 Body: "ok"）
+      - GET `/nacos/v1/ns/instance/list` - 查询实例列表（验证响应格式：包含 name、groupName、clusters、cacheMillis、hosts、lastRefTime 等字段）
+      - PUT `/nacos/v1/ns/instance` - 更新实例（验证响应 Body: "ok"）
+      - DELETE `/nacos/v1/ns/instance` - 注销实例（验证响应 Body: "ok"）
+    - **命名空间管理 CRUD**：
+      - POST `/nacos/v1/console/namespaces` - 创建命名空间（验证响应格式：RestResult 格式）
+      - GET `/nacos/v1/console/namespaces` - 查询命名空间列表（验证响应格式：RestResult 格式：{"code":200,"message":null,"data":[...]}）
+      - PUT `/nacos/v1/console/namespaces` - 更新命名空间（验证响应格式：RestResult 格式）
+      - DELETE `/nacos/v1/console/namespaces` - 删除命名空间（验证响应格式：RestResult 格式）
+    - **运维/监控 API**：
+      - GET `/nacos/v1/ns/operator/switches` - 验证响应格式（包含 enableStandalone、healthCheckEnabled、pushEnabled 等字段）
+      - GET `/nacos/v1/cs/health` - 验证响应格式（Content-Type: text/plain，Body: "UP"）
 
-> 当前集成测试总数超过 README 中标注的 193 个，并在关键路径（实例 + 服务 + 配置）上新增了“标准 OpenAPI 兼容性测试”，目标是 **对官方 Nacos OpenAPI 实现 1:1 兼容**，保证 Spring Boot / 标准 Nacos Client **开箱可用**。
+> 当前集成测试总数超过 README 中标注的 193 个，并在关键路径（实例 + 服务 + 配置）上新增了"标准 OpenAPI 兼容性测试"和"Nacos 兼容性测试"，目标是 **对官方 Nacos OpenAPI 实现 1:1 兼容**，保证 Spring Boot / 标准 Nacos Client **开箱可用**。
 
 ---
 
