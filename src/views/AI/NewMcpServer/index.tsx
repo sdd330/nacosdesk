@@ -407,8 +407,8 @@ export default defineComponent({
               >
                 <MonacoEditor
                   ref={monacoEditorRef}
-                  modelValue={formData.localServerConfig}
-                  onUpdate:modelValue={(val: string) => (formData.localServerConfig = val)}
+                  value={formData.localServerConfig}
+                  onUpdate:value={(val: string) => (formData.localServerConfig = val)}
                   language="json"
                   height="400px"
                 />

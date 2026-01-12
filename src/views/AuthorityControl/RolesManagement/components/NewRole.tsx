@@ -102,6 +102,16 @@ export default defineComponent({
         title={t('newRole.bindingRoles')}
         width="400px"
         onClose={handleCancel}
+       v-slots={
+          footer: () => (
+            <div class="flex justify-end gap-2">
+            <ElButton onClick={handleCancel}>{t('service.editService.cancel')}</ElButton>
+            <ElButton type="primary" onClick={handleConfirm}>
+              {t('service.editService.confirm')}
+            </ElButton>
+          </div>
+          ),
+        }
       >
         <ElForm label-width="100px">
           <ElFormItem
@@ -135,14 +145,7 @@ export default defineComponent({
           </ElFormItem>
         </ElForm>
 
-        <template #footer>
-          <div class="flex justify-end gap-2">
-            <ElButton onClick={handleCancel}>{t('service.editService.cancel')}</ElButton>
-            <ElButton type="primary" onClick={handleConfirm}>
-              {t('service.editService.confirm')}
-            </ElButton>
-          </div>
-        </template>
+        
       </ElDialog>
     )
   },

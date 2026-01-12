@@ -252,7 +252,7 @@ export default defineComponent({
           <div class="mt-4">
             <h4 class="mb-2 font-semibold">{t('mcpDetail.serverSpecification') || '服务器规范'}:</h4>
             <MonacoEditor
-              modelValue={detail.serverSpecification || '{}'}
+              value={detail.serverSpecification || '{}'}
               language="json"
               height="300px"
               readOnly
@@ -378,6 +378,18 @@ export default defineComponent({
           onUpdate:modelValue={(val: boolean) => (toolDialogVisible.value = val)}
           title={toolDialogMode.value === 'edit' ? (t('mcpDetail.editTool') || '编辑 Tool') : (t('mcpDetail.newMcpTool') || '添加 Tool')}
           width="800px"
+          v-slots={{
+            footer: () => (
+              <div class="flex justify-end gap-2">
+                <ElButton onClick={() => (toolDialogVisible.value = false)}>
+                  {t('common.cancel') || '取消'}
+                </ElButton>
+                <ElButton type="primary" onClick={handleSaveTool}>
+                  {t('common.confirm') || '确定'}
+                </ElButton>
+              </div>
+            ),
+          }}
         >
           <ElForm
             ref={toolFormRef}
@@ -412,16 +424,16 @@ export default defineComponent({
             </ElFormItem>
             <ElFormItem label={t('mcpDetail.toolInputSchema') || 'Tool 入参描述'} prop="inputSchema">
               <MonacoEditor
-                modelValue={toolFormData.inputSchema}
-                onUpdate:modelValue={(val: string) => (toolFormData.inputSchema = val)}
+                value={toolFormData.inputSchema}
+                onUpdate:value={(val: string) => (toolFormData.inputSchema = val)}
                 language="json"
                 height="300px"
               />
             </ElFormItem>
             <ElFormItem label={t('mcpDetail.toolOutputSchema') || 'Tool 出参描述'} prop="outputSchema">
               <MonacoEditor
-                modelValue={toolFormData.outputSchema}
-                onUpdate:modelValue={(val: string) => (toolFormData.outputSchema = val)}
+                value={toolFormData.outputSchema}
+                onUpdate:value={(val: string) => (toolFormData.outputSchema = val)}
                 language="json"
                 height="200px"
               />
@@ -430,17 +442,6 @@ export default defineComponent({
               </div>
             </ElFormItem>
           </ElForm>
-
-          <template #footer>
-            <div class="flex justify-end gap-2">
-              <ElButton onClick={() => (toolDialogVisible.value = false)}>
-                {t('common.cancel') || '取消'}
-              </ElButton>
-              <ElButton type="primary" onClick={handleSaveTool}>
-                {t('common.confirm') || '确定'}
-              </ElButton>
-            </div>
-          </template>
         </ElDialog>
 
         {/* 工具详情对话框 */}
@@ -449,6 +450,15 @@ export default defineComponent({
           onUpdate:modelValue={(val: boolean) => (toolDetailDialogVisible.value = val)}
           title={t('mcpDetail.toolDetail') || 'Tool 详情'}
           width="800px"
+          v-slots={{
+            footer: () => (
+              <div class="flex justify-end">
+                <ElButton onClick={() => (toolDetailDialogVisible.value = false)}>
+                  {t('mcpDetail.close') || '关闭'}
+                </ElButton>
+              </div>
+            ),
+          }}
         >
           {toolDetailData.value && (
             <div>
@@ -463,7 +473,7 @@ export default defineComponent({
               <div class="mb-4">
                 <h4 class="mb-2 font-semibold">{t('mcpDetail.toolInputSchema') || 'Tool 入参描述'}:</h4>
                 <MonacoEditor
-                  modelValue={JSON.stringify(toolDetailData.value.inputSchema || {}, null, 2)}
+                  value={JSON.stringify(toolDetailData.value.inputSchema || {}, null, 2)}
                   language="json"
                   height="300px"
                   readOnly
@@ -471,14 +481,6 @@ export default defineComponent({
               </div>
             </div>
           )}
-
-          <template #footer>
-            <div class="flex justify-end">
-              <ElButton onClick={() => (toolDetailDialogVisible.value = false)}>
-                {t('mcpDetail.close') || '关闭'}
-              </ElButton>
-            </div>
-          </template>
         </ElDialog>
       </div>
     )

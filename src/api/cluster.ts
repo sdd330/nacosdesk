@@ -31,7 +31,9 @@ export interface ClusterNodeListResponse {
  * 获取集群节点列表
  */
 export function getClusterNodes(params: ClusterNodeListParams): Promise<ClusterNodeListResponse> {
-  return httpClient.get<ClusterNodeListResponse>('/v3/console/core/cluster/nodes', { params })
+  return httpClient.get<ClusterNodeListResponse>('/v3/console/core/cluster/nodes', { 
+    params: params as Record<string, string | number | undefined>
+  })
 }
 
 /**

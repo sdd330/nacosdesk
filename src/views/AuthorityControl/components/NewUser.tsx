@@ -113,6 +113,16 @@ export default defineComponent({
         title={t('newUser.createUser')}
         width="400px"
         onClose={handleClose}
+       v-slots={
+          footer: () => (
+            <div class="flex justify-end gap-2">
+            <ElButton onClick={handleClose}>{t('newUser.cancel')}</ElButton>
+            <ElButton type="primary" loading={loading.value} onClick={handleConfirm}>
+              {t('newUser.confirm')}
+            </ElButton>
+          </div>
+          ),
+        }
       >
         <ElForm label-width="100px">
           <ElFormItem label={t('newUser.username')} required error={errors.username}>
@@ -151,14 +161,7 @@ export default defineComponent({
           </ElFormItem>
         </ElForm>
 
-        <template #footer>
-          <div class="flex justify-end gap-2">
-            <ElButton onClick={handleClose}>{t('newUser.cancel')}</ElButton>
-            <ElButton type="primary" loading={loading.value} onClick={handleConfirm}>
-              {t('newUser.confirm')}
-            </ElButton>
-          </div>
-        </template>
+        
       </ElDialog>
     )
   },

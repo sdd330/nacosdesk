@@ -112,6 +112,16 @@ export default defineComponent({
         title={t('passwordReset.resetPassword')}
         width="400px"
         onClose={handleClose}
+       v-slots={
+          footer: () => (
+            <div class="flex justify-end gap-2">
+            <ElButton onClick={handleClose}>{t('passwordReset.cancel')}</ElButton>
+            <ElButton type="primary" loading={loading.value} onClick={handleConfirm}>
+              {t('passwordReset.confirm')}
+            </ElButton>
+          </div>
+          ),
+        }
       >
         <ElForm label-width="100px">
           <ElFormItem label={t('passwordReset.username')} required>
@@ -143,14 +153,7 @@ export default defineComponent({
           </ElFormItem>
         </ElForm>
 
-        <template #footer>
-          <div class="flex justify-end gap-2">
-            <ElButton onClick={handleClose}>{t('passwordReset.cancel')}</ElButton>
-            <ElButton type="primary" loading={loading.value} onClick={handleConfirm}>
-              {t('passwordReset.confirm')}
-            </ElButton>
-          </div>
-        </template>
+        
       </ElDialog>
     )
   },

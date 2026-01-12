@@ -190,7 +190,7 @@ export default defineComponent({
               <div style="width: 100%; height: 400px">
                 <MonacoEditor
                   ref={monacoEditorRef}
-                  modelValue={configContent.value}
+                  value={configContent.value}
                   language={configType.value}
                   readOnly={false}
                 />

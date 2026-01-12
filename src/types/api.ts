@@ -2,6 +2,13 @@
  * API 类型定义
  */
 
+export interface ApiResponse<T = any> {
+  code?: number
+  data?: T
+  message?: string
+  success?: boolean
+}
+
 export interface LoginParams {
   username: string
   password: string

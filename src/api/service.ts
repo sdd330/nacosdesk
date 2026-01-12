@@ -36,7 +36,9 @@ export interface ServiceListResponse {
  * 获取服务列表
  */
 export function getServiceList(params: ServiceListParams): Promise<ServiceListResponse> {
-  return httpClient.get<ServiceListResponse>('/v3/console/ns/service/list', { params })
+  return httpClient.get<ServiceListResponse>('/v3/console/ns/service/list', { 
+    params: params as Record<string, string | number | undefined>
+  })
 }
 
 /**

@@ -323,6 +323,24 @@ export default defineComponent({
         title={t('mcpServerManagement.importMcpServer') || '导入 MCP Server'}
         width="900px"
         onClose={handleClose}
+        v-slots={{
+          footer: () => (
+            <div class="flex justify-end gap-2">
+              <ElButton onClick={handleClose}>{t('common.cancel') || '取消'}</ElButton>
+              <ElButton type="primary" loading={validating.value} onClick={validateImport}>
+                {t('mcpServerManagement.validateImport') || '校验'}
+              </ElButton>
+              <ElButton
+                type="success"
+                loading={loading.value}
+                disabled={importResults.value.length === 0}
+                onClick={executeImport}
+              >
+                {t('mcpServerManagement.executeImport') || '执行导入'}
+              </ElButton>
+            </div>
+          ),
+        }}
       >
         <ElTabs v-model={activeTab.value}>
           {/* URL 导入 */}
@@ -354,24 +372,27 @@ export default defineComponent({
               onSuccess={handleFileSuccess}
               onError={handleFileError}
               limit={1}
-            >
-              <ElButton type="primary">
-                <ElIcon><Upload /></ElIcon>
-                {t('mcpServerManagement.uploadFile') || '上传文件'}
-              </ElButton>
-              <template #tip>
-                <div class="text-sm text-gray-500 mt-2">
-                  {t('mcpServerManagement.importFileTip') || '支持 ZIP 格式，文件大小不超过 10MB'}
-                </div>
-              </template>
-            </ElUpload>
+              v-slots={{
+                default: () => (
+                  <ElButton type="primary">
+                    <Upload />
+                    {t('mcpServerManagement.uploadFile') || '上传文件'}
+                  </ElButton>
+                ),
+                tip: () => (
+                  <div class="text-sm text-gray-500 mt-2">
+                    {t('mcpServerManagement.importFileTip') || '支持 ZIP 格式，文件大小不超过 10MB'}
+                  </div>
+                ),
+              }}
+            />
           </ElTabPane>
 
           {/* JSON 内容导入 */}
           <ElTabPane label={t('mcpServerManagement.importJson') || 'JSON 内容'} name="json">
             <MonacoEditor
-              modelValue={jsonForm.content}
-              onUpdate:modelValue={(val: string) => (jsonForm.content = val)}
+              value={jsonForm.content}
+              onUpdate:value={(val: string) => (jsonForm.content = val)}
               language="json"
               height="400px"
             />
@@ -414,21 +435,6 @@ export default defineComponent({
 
         {/* 操作按钮 */}
         <template #footer>
-          <div class="flex justify-end gap-2">
-            <ElButton onClick={handleClose}>{t('common.cancel') || '取消'}</ElButton>
-            <ElButton type="primary" loading={validating.value} onClick={validateImport}>
-              {t('mcpServerManagement.validateImport') || '校验'}
-            </ElButton>
-            <ElButton
-              type="success"
-              loading={loading.value}
-              disabled={importResults.value.length === 0}
-              onClick={executeImport}
-            >
-              {t('mcpServerManagement.executeImport') || '执行导入'}
-            </ElButton>
-          </div>
-        </template>
       </ElDialog>
     )
   },

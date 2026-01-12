@@ -144,7 +144,7 @@ export interface HistoryListResponse {
  */
 export function getHistoryList(params: HistoryListParams): Promise<HistoryListResponse> {
   return httpClient.get<HistoryListResponse>('/v3/console/cs/history/list', {
-    params: params as Record<string, string>,
+    params: params as Record<string, string | number | undefined>,
   })
 }
 

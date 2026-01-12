@@ -192,7 +192,7 @@ export default defineComponent({
               <div style="width: 100%; height: 400px">
                 <MonacoEditor
                   ref={monacoEditorRef}
-                  modelValue={formData.content}
+                  value={formData.content}
                   language={formData.type}
                   readOnly={true}
                 />

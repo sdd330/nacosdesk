@@ -134,9 +134,11 @@ export function removeParams(
   }
 }
 
-export default {
+export const urlParams = {
   getParams,
   setParams,
   removeParams,
 }
+
+export default urlParams
 

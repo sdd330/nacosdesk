@@ -116,6 +116,16 @@ export default defineComponent({
         title={t('service.editInstance.title')}
         width="600px"
         onClose={closeDialog}
+       v-slots={
+          footer: () => (
+            <div class="flex justify-end gap-2">
+            <ElButton onClick={closeDialog}>{t('service.editInstance.cancel')}</ElButton>
+            <ElButton type="primary" loading={loading.value} onClick={handleConfirm}>
+              {t('service.editInstance.confirm')}
+            </ElButton>
+          </div>
+          ),
+        }
       >
         <ElForm label-width="120px">
           <ElFormItem label="IP:">
@@ -153,14 +163,7 @@ export default defineComponent({
           </ElFormItem>
         </ElForm>
 
-        <template #footer>
-          <div class="flex justify-end gap-2">
-            <ElButton onClick={closeDialog}>{t('service.editInstance.cancel')}</ElButton>
-            <ElButton type="primary" loading={loading.value} onClick={handleConfirm}>
-              {t('service.editInstance.confirm')}
-            </ElButton>
-          </div>
-        </template>
+        
       </ElDialog>
     )
   },

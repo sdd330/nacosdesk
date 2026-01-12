@@ -4,7 +4,7 @@
  */
 
 export interface RequestConfig extends RequestInit {
-  params?: Record<string, string>
+  params?: Record<string, string | number | undefined>
   timeout?: number
 }
 
@@ -27,7 +27,7 @@ class HttpClient {
   /**
    * 构建完整 URL
    */
-  private buildURL(url: string, params?: Record<string, string>): string {
+  private buildURL(url: string, params?: Record<string, string | number | undefined>): string {
     const fullURL = url.startsWith('http') ? url : `${this.baseURL}${url}`
     
     if (!params || Object.keys(params).length === 0) {

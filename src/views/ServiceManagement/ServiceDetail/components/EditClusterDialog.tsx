@@ -141,7 +141,17 @@ export default defineComponent({
           title={t('service.editCluster.title')}
           width="600px"
           onClose={closeDialog}
-        >
+         v-slots={
+          footer: () => (
+            <div class="flex justify-end gap-2">
+              <ElButton onClick={closeDialog}>{t('service.editCluster.cancel')}</ElButton>
+              <ElButton type="primary" loading={loading.value} onClick={handleConfirm}>
+                {t('service.editCluster.confirm')}
+              </ElButton>
+            </div>
+          ),
+        }
+      >
           <ElForm label-width="120px">
             <ElFormItem label={t('service.editCluster.healthCheckerType')}>
               <ElSelect
@@ -205,14 +215,7 @@ export default defineComponent({
             </ElFormItem>
           </ElForm>
 
-          <template #footer>
-            <div class="flex justify-end gap-2">
-              <ElButton onClick={closeDialog}>{t('service.editCluster.cancel')}</ElButton>
-              <ElButton type="primary" loading={loading.value} onClick={handleConfirm}>
-                {t('service.editCluster.confirm')}
-              </ElButton>
-            </div>
-          </template>
+          
         </ElDialog>
       )
     }

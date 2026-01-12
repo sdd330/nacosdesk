@@ -293,8 +293,8 @@ export default defineComponent({
 
             <MonacoEditor
               ref={configEditorRef}
-              modelValue={configContent.value}
-              onUpdate:modelValue={(val: string) => (configContent.value = val)}
+              value={configContent.value}
+              onUpdate:value={(val: string) => (configContent.value = val)}
               language="json"
               height="500px"
               readOnly={!configEditing.value}

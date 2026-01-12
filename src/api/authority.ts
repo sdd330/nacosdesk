@@ -36,7 +36,9 @@ export interface UserListResponse {
  * 获取用户列表
  */
 export function getUsers(params: UserListParams): Promise<UserListResponse> {
-  return httpClient.get<UserListResponse>('/v3/auth/user/list', { params })
+  return httpClient.get<UserListResponse>('/v3/auth/user/list', { 
+    params: params as Record<string, string | number | undefined>
+  })
 }
 
 /**
@@ -102,7 +104,9 @@ export interface RoleListResponse {
  * 获取角色列表
  */
 export function getRoles(params: RoleListParams): Promise<RoleListResponse> {
-  return httpClient.get<RoleListResponse>('/v3/auth/role/list', { params })
+  return httpClient.get<RoleListResponse>('/v3/auth/role/list', { 
+    params: params as Record<string, string | number | undefined>
+  })
 }
 
 /**
@@ -164,7 +168,9 @@ export interface PermissionListResponse {
  * 获取权限列表
  */
 export function getPermissions(params: PermissionListParams): Promise<PermissionListResponse> {
-  return httpClient.get<PermissionListResponse>('/v3/auth/permission/list', { params })
+  return httpClient.get<PermissionListResponse>('/v3/auth/permission/list', { 
+    params: params as Record<string, string | number | undefined>
+  })
 }
 
 /**

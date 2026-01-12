@@ -228,8 +228,8 @@ export default defineComponent({
             >
               <MonacoEditor
                 ref={monacoEditorRef}
-                modelValue={formData.config}
-                onUpdate:modelValue={(val: string) => (formData.config = val)}
+                value={formData.config}
+                onUpdate:value={(val: string) => (formData.config = val)}
                 language="json"
                 height="400px"
               />

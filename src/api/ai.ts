@@ -60,7 +60,9 @@ export interface McpTool {
 export async function getMcpList(
   params: McpListParams
 ): Promise<ApiResponse<McpListResponse>> {
-  return httpClient.get('/v3/console/ai/mcp/list', { params })
+  return httpClient.get('/v3/console/ai/mcp/list', { 
+    params: params as Record<string, string | number | undefined>
+  })
 }
 
 /**
@@ -151,11 +153,12 @@ export async function addMcpTool(
   if (detail.code === 0 && detail.data) {
     const tools = await getMcpTools(mcpId)
     const updatedTools = [...(tools.data || []), tool]
-    return updateMcp(mcpId, {
+    await updateMcp(mcpId, {
       serverSpecification: detail.data.serverSpecification || '',
       toolSpecification: JSON.stringify(updatedTools),
       endpointSpecification: detail.data.endpointSpecification || '',
     })
+    return { code: 0, success: true } as ApiResponse<void>
   }
   throw new Error('Failed to get MCP detail')
 }
@@ -171,11 +174,12 @@ export async function deleteMcpTool(
   if (detail.code === 0 && detail.data) {
     const tools = await getMcpTools(mcpId)
     const updatedTools = (tools.data || []).filter((t) => t.name !== toolName)
-    return updateMcp(mcpId, {
+    await updateMcp(mcpId, {
       serverSpecification: detail.data.serverSpecification || '',
       toolSpecification: JSON.stringify(updatedTools),
       endpointSpecification: detail.data.endpointSpecification || '',
     })
+    return { code: 0, success: true } as ApiResponse<void>
   }
   throw new Error('Failed to get MCP detail')
 }
@@ -223,7 +227,9 @@ export interface UpdateAgentParams {
 export async function getAgentList(
   params: AgentListParams
 ): Promise<ApiResponse<AgentListResponse>> {
-  return httpClient.get('/v3/console/ai/a2a/list', { params })
+  return httpClient.get('/v3/console/ai/a2a/list', { 
+    params: params as Record<string, string | number | undefined>
+  })
 }
 
 /**

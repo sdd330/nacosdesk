@@ -116,6 +116,16 @@ export default defineComponent({
         title={t('newRole.bindingRoles')}
         width="400px"
         onClose={handleClose}
+       v-slots={
+          footer: () => (
+            <div class="flex justify-end gap-2">
+            <ElButton onClick={handleClose}>{t('newRole.cancel')}</ElButton>
+            <ElButton type="primary" loading={loading.value} onClick={handleConfirm}>
+              {t('newRole.confirm')}
+            </ElButton>
+          </div>
+          ),
+        }
       >
         <ElForm label-width="100px">
           <ElFormItem label={t('newRole.role')} required error={errors.role}>
@@ -142,14 +152,7 @@ export default defineComponent({
           </ElFormItem>
         </ElForm>
 
-        <template #footer>
-          <div class="flex justify-end gap-2">
-            <ElButton onClick={handleClose}>{t('newRole.cancel')}</ElButton>
-            <ElButton type="primary" loading={loading.value} onClick={handleConfirm}>
-              {t('newRole.confirm')}
-            </ElButton>
-          </div>
-        </template>
+        
       </ElDialog>
     )
   },

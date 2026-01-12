@@ -153,6 +153,20 @@ export default defineComponent({
         title={t('namespace.confirmModify')}
         width="50%"
         onClose={hide}
+        v-slots={{
+          footer: () => (
+            isPublic.value ? (
+              <div />
+            ) : (
+              <div class="flex justify-end gap-2">
+                <ElButton onClick={hide}>{t('namespace.cancel')}</ElButton>
+                <ElButton type="primary" loading={loading.value} onClick={handleConfirm}>
+                  {t('namespace.publicSpace')}
+                </ElButton>
+              </div>
+            )
+          ),
+        }}
       >
         <ElForm label-width="120px">
           <ElFormItem label={t('namespace.load')} required error={errors.namespaceShowName}>
@@ -180,19 +194,6 @@ export default defineComponent({
             />
           </ElFormItem>
         </ElForm>
-
-        <template #footer>
-          {isPublic ? (
-            <div />
-          ) : (
-            <div class="flex justify-end gap-2">
-              <ElButton onClick={hide}>{t('namespace.cancel')}</ElButton>
-              <ElButton type="primary" loading={loading.value} onClick={handleConfirm}>
-                {t('namespace.publicSpace')}
-              </ElButton>
-            </div>
-          )}
-        </template>
       </ElDialog>
       )
     }

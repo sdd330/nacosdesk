@@ -177,6 +177,16 @@ export default defineComponent({
         title={t('namespace.newnamespce')}
         width="50%"
         onClose={hide}
+        v-slots={{
+          footer: () => (
+            <div class="flex justify-end gap-2">
+              <ElButton onClick={hide}>{t('namespace.cancel')}</ElButton>
+              <ElButton type="primary" loading={loading.value} disabled={disabled.value} onClick={handleConfirm}>
+                {t('namespace.ok')}
+              </ElButton>
+            </div>
+          ),
+        }}
       >
         <ElForm label-width="120px">
           <ElFormItem label={t('namespace.namespaceId')} error={errors.customNamespaceId}>
@@ -213,14 +223,7 @@ export default defineComponent({
           </ElFormItem>
         </ElForm>
 
-        <template #footer>
-          <div class="flex justify-end gap-2">
-            <ElButton onClick={hide}>{t('namespace.cancel')}</ElButton>
-            <ElButton type="primary" loading={loading.value} disabled={disabled.value} onClick={handleConfirm}>
-              {t('namespace.ok')}
-            </ElButton>
-          </div>
-        </template>
+        
       </ElDialog>
     )
   },
