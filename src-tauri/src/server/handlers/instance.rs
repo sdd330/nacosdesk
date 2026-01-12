@@ -12,6 +12,7 @@ use axum_extra::extract::Form;
 use serde::Deserialize;
 use std::sync::Arc;
 use tauri::AppHandle;
+use chrono::Utc;
 
 use crate::service::{
     register_instance as register_instance_impl,
@@ -102,10 +103,14 @@ pub struct HeartbeatParams {
     pub serviceName: String,
     #[serde(default)]
     pub namespaceId: String,
+    #[serde(default)]
+    pub groupName: String, // 服务组，默认 "DEFAULT_GROUP"
     pub ip: Option<String>,
     pub port: Option<String>,
     #[serde(default)]
-    pub cluster: Option<String>,
+    pub clusterName: Option<String>, // 注意：API 文档中使用的是 clusterName，不是 cluster
+    #[serde(default)]
+    pub ephemeral: Option<String>, // 是否临时实例
     #[serde(default)]
     pub beat: Option<String>, // 心跳信息 JSON 字符串
 }
@@ -134,6 +139,21 @@ pub struct PatchInstanceParams {
 #[derive(Debug, Deserialize)]
 pub struct InstanceStatusesParams {
     pub key: String, // 格式：namespaceId##serviceName 或 serviceName
+}
+
+/// 更新实例健康状态参数
+#[derive(Debug, Deserialize)]
+pub struct UpdateInstanceHealthParams {
+    pub serviceName: String,
+    pub ip: String,
+    pub port: String,
+    pub healthy: String, // "true" 或 "false"
+    #[serde(default)]
+    pub namespaceId: String,
+    #[serde(default)]
+    pub groupName: String,
+    #[serde(default)]
+    pub clusterName: Option<String>,
 }
 
 /// 注册实例
@@ -279,8 +299,18 @@ pub async fn list_instances(
                 .map(|s| s == "true" || s == "True" || s == "1")
                 .unwrap_or(false);
 
+            // 根据 Nacos API 标准，响应格式应该包含更多字段
             let hosts: Vec<serde_json::Value> = response.instances
                 .iter()
+                .filter(|inst| {
+                    // 如果指定了集群过滤
+                    if let Some(clusters) = &params.clusters {
+                        let cluster_list: Vec<&str> = clusters.split(',').collect();
+                        cluster_list.contains(&inst.cluster_name.as_str())
+                    } else {
+                        true
+                    }
+                })
                 .filter(|inst| !healthy_only || inst.healthy)
                 .map(|inst| {
                     serde_json::json!({
@@ -292,17 +322,30 @@ pub async fn list_instances(
                         "enabled": inst.enabled,
                         "ephemeral": inst.ephemeral,
                         "clusterName": inst.cluster_name,
-                        "serviceName": inst.service_name,
+                        "serviceName": format!("{}@@{}", group_name, params.serviceName),
                         "metadata": inst.metadata.as_ref()
                             .and_then(|s| serde_json::from_str::<serde_json::Value>(s).ok())
-                            .unwrap_or(serde_json::json!({}))
+                            .unwrap_or(serde_json::json!({})),
+                        "instanceHeartBeatInterval": 5000,
+                        "instanceIdGenerator": "simple",
+                        "instanceHeartBeatTimeOut": 15000,
+                        "ipDeleteTimeout": 30000
                     })
                 })
                 .collect();
 
+            // 根据 Nacos API 标准格式返回
             Ok(Json(serde_json::json!({
+                "name": format!("{}@@{}", group_name, params.serviceName),
+                "groupName": group_name,
+                "clusters": params.clusters.as_deref().unwrap_or(""),
+                "cacheMillis": 10000,
                 "hosts": hosts,
-                "dom": params.serviceName
+                "lastRefTime": Utc::now().timestamp_millis(),
+                "checksum": "",
+                "allIPs": false,
+                "reachProtectionThreshold": false,
+                "valid": true
             })))
         }
         Err(_) => Err(axum::http::StatusCode::INTERNAL_SERVER_ERROR),
@@ -363,9 +406,11 @@ pub async fn get_instance(
 
 /// 实例心跳
 /// PUT /nacos/v1/ns/instance/beat
-/// 必需参数: serviceName
-/// 可选参数: namespaceId, ip, port, cluster, beat
-/// 响应: 心跳响应（JSON 格式，包含 clientBeatInterval, code, lightBeatEnabled）
+/// 必需参数: serviceName, beat (心跳信息 JSON 字符串)
+/// 可选参数: namespaceId, groupName, ip, port, clusterName, ephemeral
+/// 响应: "ok"（成功）或心跳响应（JSON 格式，包含 clientBeatInterval, code, lightBeatEnabled）
+/// 
+/// 注意：根据 Nacos API 文档，beat 参数是必需的，包含实例的完整信息
 pub async fn heartbeat(
     State(app): State<Arc<AppHandle>>,
     Form(params): Form<HeartbeatParams>,
@@ -377,16 +422,58 @@ pub async fn heartbeat(
         params.namespaceId
     };
     
-    let group_name = "DEFAULT_GROUP".to_string();
+    let group_name = if params.groupName.is_empty() {
+        "DEFAULT_GROUP".to_string()
+    } else {
+        params.groupName
+    };
 
-    // 如果有 ip 和 port，更新实例的最后心跳时间
-    if let (Some(ip), Some(port_str)) = (params.ip, params.port) {
+    // 解析 beat 参数（如果提供）
+    // beat 参数是 JSON 字符串，包含实例的完整信息
+    if let Some(beat_str) = params.beat {
+        if let Ok(beat_json) = serde_json::from_str::<serde_json::Value>(&beat_str) {
+            // 从 beat JSON 中提取信息
+            let ip = beat_json.get("ip")
+                .and_then(|v| v.as_str())
+                .or_else(|| params.ip.as_deref())
+                .ok_or(axum::http::StatusCode::BAD_REQUEST)?;
+            
+            let port = beat_json.get("port")
+                .and_then(|v| v.as_i64())
+                .or_else(|| params.port.as_ref().and_then(|s| s.parse::<i64>().ok()))
+                .ok_or(axum::http::StatusCode::BAD_REQUEST)?;
+            
+            let cluster_name = beat_json.get("cluster")
+                .and_then(|v| v.as_str())
+                .or_else(|| params.clusterName.as_deref())
+                .unwrap_or("DEFAULT");
+
+            // 构建实例 ID
+            let instance_id = format!("{}#{}#{}#{}", 
+                ip,
+                port,
+                cluster_name,
+                group_name
+            );
+
+            // 更新实例健康状态（心跳表示实例健康）
+            let _ = update_instance_health_impl(
+                &app,
+                &namespace_id,
+                &group_name,
+                &params.serviceName,
+                &instance_id,
+                true,
+            ).await;
+        }
+    } else if let (Some(ip), Some(port_str)) = (params.ip, params.port) {
+        // 如果没有 beat 参数，使用 ip 和 port 参数
         if let Ok(port) = port_str.parse::<i32>() {
             // 构建实例 ID
             let instance_id = format!("{}#{}#{}#{}", 
                 ip,
                 port,
-                params.cluster.as_deref().unwrap_or("DEFAULT"),
+                params.clusterName.as_deref().unwrap_or("DEFAULT"),
                 group_name
             );
 
@@ -402,7 +489,7 @@ pub async fn heartbeat(
         }
     }
 
-    // 返回心跳响应
+    // 返回心跳响应（根据 Nacos 标准格式）
     Ok(Json(serde_json::json!({
         "clientBeatInterval": 5000,
         "code": 10200,
@@ -703,6 +790,49 @@ pub async fn get_instance_statuses(
                 "ips": ips
             })))
         }
+        Err(_) => Err(axum::http::StatusCode::INTERNAL_SERVER_ERROR),
+    }
+}
+
+/// 更新实例的健康状态
+/// PUT /nacos/v1/ns/health/instance
+/// 必需参数: serviceName, ip, port, healthy
+/// 可选参数: namespaceId, groupName, clusterName
+/// 响应: "ok"（成功）
+/// 注意：仅在集群的健康检查关闭时才生效
+pub async fn update_instance_health_status(
+    State(app): State<Arc<AppHandle>>,
+    Query(params): Query<UpdateInstanceHealthParams>,
+) -> Result<Response, axum::http::StatusCode> {
+    // 处理命名空间和服务组
+    let namespace_id = if params.namespaceId.is_empty() {
+        "public".to_string()
+    } else {
+        params.namespaceId
+    };
+    
+    let group_name = if params.groupName.is_empty() {
+        "DEFAULT_GROUP".to_string()
+    } else {
+        params.groupName
+    };
+
+    // 解析端口
+    let port = params.port.parse::<i32>()
+        .map_err(|_| axum::http::StatusCode::BAD_REQUEST)?;
+
+    // 解析健康状态
+    let healthy = params.healthy == "true" || params.healthy == "True" || params.healthy == "1";
+
+    // 构建实例 ID（格式：ip#port#cluster#serviceName）
+    let cluster_name = params.clusterName.as_deref().unwrap_or("DEFAULT");
+    let instance_id = format!("{}#{}#{}#{}@@{}", params.ip, port, cluster_name, group_name, params.serviceName);
+
+    match update_instance_health_impl(&app, &namespace_id, &group_name, &params.serviceName, &instance_id, healthy).await {
+        Ok(_) => Ok(Response::builder()
+            .status(axum::http::StatusCode::OK)
+            .body(axum::body::Body::from("ok"))
+            .unwrap()),
         Err(_) => Err(axum::http::StatusCode::INTERNAL_SERVER_ERROR),
     }
 }

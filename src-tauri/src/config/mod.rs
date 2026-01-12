@@ -657,6 +657,77 @@ pub async fn get_config_history_detail(
     }))
 }
 
+/// 查询配置上一版本信息
+/// 根据当前历史版本 ID，查询上一个历史版本
+pub async fn get_config_history_previous(
+    app: &AppHandle,
+    data_id: &str,
+    group_id: &str,
+    tenant_id: &str,
+    current_id: i64,
+) -> Result<Option<ConfigHistoryInfo>, String> {
+    let db = app
+        .sqlite_plugin()
+        .get_connection("sqlite:nacos.db")
+        .await
+        .map_err(|e| format!("Failed to get database connection: {}", e))?;
+
+    // 查询当前版本信息，获取 gmt_modified 时间
+    let current_result: Option<(i64,)> = db
+        .query_one(
+            "SELECT gmt_modified FROM config_history_info WHERE data_id = ?1 AND group_id = ?2 AND tenant_id = ?3 AND nid = ?4",
+            &[
+                ("?1", data_id),
+                ("?2", group_id),
+                ("?3", tenant_id),
+                ("?4", &current_id.to_string()),
+            ],
+        )
+        .await
+        .map_err(|e| format!("Failed to query current history: {}", e))?;
+
+    let current_time = match current_result {
+        Some((time,)) => time,
+        None => return Ok(None), // 当前版本不存在
+    };
+
+    // 查询上一个版本（gmt_modified < current_time，按时间倒序取第一个）
+    let result: Option<(i64, i64, String, String, String, Option<String>, String, String, i64, i64, Option<String>, Option<String>, Option<String>, Option<String>, Option<String>, Option<String>, Option<String>)> = db
+        .query_one(
+            "SELECT id, nid, data_id, group_id, tenant_id, app_name, content, md5, gmt_create, gmt_modified, src_user, src_ip, publish_type, gray_name, ext_info, op_type, encrypted_data_key FROM config_history_info WHERE data_id = ?1 AND group_id = ?2 AND tenant_id = ?3 AND gmt_modified < ?4 ORDER BY gmt_modified DESC LIMIT 1",
+            &[
+                ("?1", data_id),
+                ("?2", group_id),
+                ("?3", tenant_id),
+                ("?4", &current_time.to_string()),
+            ],
+        )
+        .await
+        .map_err(|e| format!("Failed to query previous history: {}", e))?;
+
+    Ok(result.map(|(id, nid, data_id, group_id, tenant_id, app_name, content, md5, gmt_create, gmt_modified, src_user, src_ip, publish_type, gray_name, ext_info, op_type, encrypted_data_key)| {
+        ConfigHistoryInfo {
+            id,
+            nid,
+            data_id,
+            group_id,
+            tenant_id,
+            app_name,
+            content,
+            md5,
+            gmt_create,
+            gmt_modified,
+            src_user,
+            src_ip,
+            publish_type,
+            gray_name,
+            ext_info,
+            op_type,
+            encrypted_data_key,
+        }
+    }))
+}
+
 /// 回滚配置到指定历史版本
 pub async fn rollback_config(
     app: &AppHandle,

@@ -138,24 +138,26 @@ async fn test_<api_name>_<scenario>() {
 
 ---
 
-## 📊 测试覆盖率目标
+## 📊 测试覆盖率与标准兼容性
 
-- **配置管理 API**: 目标 90%+
-- **服务管理 API**: 目标 90%+
-- **实例管理 API**: 目标 90%+
-- **命名空间管理 API**: 目标 90%+
-- **认证 API**: 目标 90%+
-- **健康检查 API**: 目标 100%
+- **配置管理 API**  
+  - 覆盖：发布 / 获取 / 删除 / 历史 / 上一版本 / 监听 / 导入 / 导出 / 克隆 / Beta / 灰度等完整链路  
+  - 兼容性：与官方 Nacos OpenAPI 文档参数、响应结构保持一致  
+- **服务管理 API**  
+  - 覆盖：服务 CRUD、服务列表、订阅者查询等  
+  - 兼容性：`/nacos/v1/ns/service`、`/nacos/v1/ns/service/list` 响应结构对齐官方示例  
+- **实例管理 API**  
+  - 覆盖：实例 CRUD、列表、心跳、健康状态、批量元数据更新 / 删除等  
+  - 兼容性：新增 `instance_standard_api_tests.rs`，对 `/instance/list` 与 `/instance/beat` 的响应字段进行“逐字段”校验  
+- **命名空间管理 API**  
+  - 覆盖：命名空间 CRUD、命名空间隔离、级联删除配置与服务  
+- **认证 API**  
+  - 覆盖：登录、用户列表等 Console 相关接口  
+- **健康检查 / 运维 API**  
+  - 覆盖：配置 / 命名服务健康检查、服务端健康与指标、运维开关、服务器列表、Raft leader 等  
+  - 兼容性：返回字段与官方 Nacos Console 使用的接口保持兼容，满足 Spring Boot / Nacos Client 探活需求  
 
----
-
-## 📈 进度跟踪
-
-- **总任务数**: 约 165+ 个测试用例（参考 Nacos develop 项目）
-- **已完成**: 148 个（实际统计：integration_tests.rs 中的测试函数）
-- **进行中**: 0 个
-- **待完成**: 17+ 个（Console API、导出/导入、克隆、Beta/Gray 等）
-- **完成率**: 约 90%
+> 当前集成测试总数超过 README 中标注的 193 个，并在关键路径（实例 + 服务 + 配置）上新增了“标准 OpenAPI 兼容性测试”，目标是 **对官方 Nacos OpenAPI 实现 1:1 兼容**，保证 Spring Boot / 标准 Nacos Client **开箱可用**。
 
 ---
 

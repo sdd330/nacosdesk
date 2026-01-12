@@ -24,6 +24,13 @@ pub fn create_router(context_path: String, app: Arc<AppHandle>) -> Router {
         .route("/v1/console/server/health", get(handlers::health::server_health))
         .route("/v1/console/server/metrics", get(handlers::health::server_metrics))
         
+        // 系统操作路由
+        .route("/v1/ns/operator/switches", get(handlers::operator::get_switches))
+        .route("/v1/ns/operator/switches", put(handlers::operator::update_switch))
+        .route("/v1/ns/operator/metrics", get(handlers::operator::get_metrics))
+        .route("/v1/ns/operator/servers", get(handlers::operator::get_servers))
+        .route("/v1/ns/raft/leader", get(handlers::operator::get_raft_leader))
+        
         // 配置管理路由
         .route("/v1/cs/configs", get(handlers::config::get_config))
         .route("/v1/cs/configs", post(handlers::config::publish_config))
@@ -31,6 +38,7 @@ pub fn create_router(context_path: String, app: Arc<AppHandle>) -> Router {
         .route("/v1/cs/configs/listener", post(handlers::config::listen_config))
         .route("/v1/cs/configs/listener", get(handlers::config::list_listeners))
         .route("/v1/cs/history", get(handlers::config::get_history))
+        .route("/v1/cs/history/previous", get(handlers::config::get_history_previous))
         // Console API：配置搜索和高级信息
         .route("/v1/cs/configs/catalog", get(handlers::config::get_config_catalog))
         // Console API：监听查询
@@ -47,6 +55,7 @@ pub fn create_router(context_path: String, app: Arc<AppHandle>) -> Router {
         .route("/v1/ns/instance", get(handlers::instance::get_instance))
         .route("/v1/ns/instance/beat", put(handlers::instance::heartbeat))
         .route("/v1/ns/instance", patch(handlers::instance::patch_instance))
+        .route("/v1/ns/health/instance", put(handlers::instance::update_instance_health_status))
         .route("/v1/ns/instance/metadata/batch", put(handlers::instance::batch_update_metadata))
         .route("/v1/ns/instance/metadata/batch", delete(handlers::instance::batch_delete_metadata))
         .route("/v1/ns/instance/statuses", get(handlers::instance::get_instance_statuses))

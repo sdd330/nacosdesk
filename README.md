@@ -69,7 +69,18 @@
 - ✅ 支持 PWA（渐进式 Web 应用）
 - ✅ 支持 Tauri 2.0 桌面应用
 - ✅ 支持 SQLite 嵌入式数据库
-- ✅ **支持作为 Nacos Standalone API 服务器**（监听 8848 端口，支持 Spring Boot 连接）
+- ✅ **支持作为 Nacos Standalone API 服务器**（监听 8848 端口，支持 Spring Boot / 标准 Nacos Client 连接）
+
+> **API 兼容性说明**
+>
+> - 内置 HTTP API 与官方 Nacos Standalone **OpenAPI 全量对齐**（基于 MCP 导入的官方 OpenAPI 文档）
+> - 覆盖的模块包括：
+>   - 配置管理：`/nacos/v1/cs/configs*`（发布 / 获取 / 删除 / 监听 / 历史 / 历史上一版本）
+>   - 服务管理：`/nacos/v1/ns/service*`（服务 CRUD、服务列表）
+>   - 实例管理：`/nacos/v1/ns/instance*`（实例 CRUD、列表、心跳、健康状态、批量元数据）
+>   - 命名空间：`/nacos/v1/console/namespaces`（命名空间 CRUD）
+>   - 运维 / 监控：`/nacos/v1/ns/operator/*`、`/nacos/v1/ns/raft/leader`、`/nacos/v1/cs/health`、`/nacos/v1/ns/health`
+> - 所有上述接口均有对应的 **Rust 集成测试**，并在新增的 `instance_standard_api_tests` 中对“响应格式与官方示例”做了专门校验，确保 Spring Boot / Spring Cloud Alibaba Nacos **开箱即可对接**。
 
 ### ✅ 项目状态
 

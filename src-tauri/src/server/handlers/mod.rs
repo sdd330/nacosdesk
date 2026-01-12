@@ -8,6 +8,7 @@ pub mod config;
 pub mod health;
 pub mod instance;
 pub mod namespace;
+pub mod operator;
 pub mod service;
 
 use axum::http::StatusCode;

@@ -1107,6 +1107,81 @@ pub async fn get_history(
     }
 }
 
+/// 查询配置历史上一版本参数
+#[derive(Debug, Deserialize)]
+pub struct ConfigHistoryPreviousParams {
+    pub id: String, // 当前历史版本 ID (nid)
+    pub dataId: String,
+    pub group: String,
+    #[serde(default)]
+    pub tenant: String,
+}
+
+/// 查询配置上一版本信息
+/// GET /nacos/v1/cs/history/previous
+/// 必需参数: id, dataId, group
+/// 可选参数: tenant
+/// 响应: 上一版本历史记录（JSON 格式）
+pub async fn get_history_previous(
+    State(app): State<Arc<AppHandle>>,
+    Query(params): Query<ConfigHistoryPreviousParams>,
+) -> Result<Json<serde_json::Value>, axum::http::StatusCode> {
+    use crate::config::get_config_history_previous;
+    
+    // 处理命名空间
+    let tenant_id = if params.tenant.is_empty() {
+        "public".to_string()
+    } else {
+        params.tenant
+    };
+
+    // 解析历史版本 ID
+    let current_id = params.id.parse::<i64>()
+        .map_err(|_| axum::http::StatusCode::BAD_REQUEST)?;
+
+    match get_config_history_previous(
+        &app,
+        &params.dataId,
+        &params.group,
+        &tenant_id,
+        current_id,
+    )
+    .await
+    {
+        Ok(Some(history)) => {
+            // 转换为 Nacos API 格式
+            // SQLite 存储的是秒级时间戳，需要转换为毫秒
+            let created_time = chrono::DateTime::from_timestamp(history.gmt_create, 0)
+                .unwrap_or_default()
+                .format("%Y-%m-%dT%H:%M:%S%.3f%z")
+                .to_string();
+            let modified_time = chrono::DateTime::from_timestamp(history.gmt_modified, 0)
+                .unwrap_or_default()
+                .format("%Y-%m-%dT%H:%M:%S%.3f%z")
+                .to_string();
+            
+            let response = serde_json::json!({
+                "id": history.nid.to_string(),
+                "lastId": -1, // Nacos 标准格式，上一版本没有 lastId
+                "dataId": history.data_id,
+                "group": history.group_id,
+                "tenant": history.tenant_id,
+                "appName": history.app_name.unwrap_or_default(),
+                "md5": history.md5,
+                "content": history.content,
+                "srcIp": history.src_ip.unwrap_or_default(),
+                "srcUser": history.src_user,
+                "opType": history.op_type.unwrap_or_default(),
+                "createdTime": created_time,
+                "lastModifiedTime": modified_time,
+            });
+            Ok(Json(response))
+        }
+        Ok(None) => Err(axum::http::StatusCode::NOT_FOUND),
+        Err(_) => Err(axum::http::StatusCode::INTERNAL_SERVER_ERROR),
+    }
+}
+
 /// 精确搜索配置
 /// GET /nacos/v1/cs/configs?search=accurate
 /// 参数: dataId, group, tenant, appName, config_tags, pageNo, pageSize

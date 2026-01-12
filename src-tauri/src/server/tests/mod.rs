@@ -39,4 +39,8 @@ mod health_integration_tests;
 mod namespace_integration_tests;
 #[cfg(test)]
 mod console_api_integration_tests;
+#[cfg(test)]
+mod instance_standard_api_tests;
+#[cfg(test)]
+mod config_standard_api_tests;
 
